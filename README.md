@@ -191,7 +191,7 @@ python eval.py --path1 results/TriPS-T/sr_bicubic/recon \
 
 | Tag | Resize before LPIPS | Comparable to |
 |---|---|---|
-| `lpips_FLAIR` (= `lpips_flair`) | none — scored at **full resolution** | [FLAIR](https://github.com/prs-eth/FLAIR/) |
+| `lpips_FLAIR` (= `lpips_flair`) | none, scored at **full resolution** | [FLAIR](https://github.com/prs-eth/FLAIR/) |
 | `lpips_FlowDPS` (= `lpips_flowdps`) | images resized to **224×224** | [FlowDPS](https://github.com/FlowDPS-Inverse/FlowDPS/tree/main) |
 
 > Use `lpips_FLAIR` to match the FLAIR evaluation protocol and `lpips_FlowDPS` to match the FlowDPS protocol; the two casings (`lpips_FLAIR`/`lpips_flair`, `lpips_FlowDPS`/`lpips_flowdps`) are registered identically.
