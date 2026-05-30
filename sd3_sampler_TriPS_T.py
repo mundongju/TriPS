@@ -565,7 +565,7 @@ class SD3FlowDPS(SD3Euler):
 ########################################################################################
 
 ###### FlowDPS ###############
-@register_solver("flowdps_baseline")
+@register_solver("flowdps")
 class SD3FlowDPS(SD3Euler):
     def data_consistency(self, z0t, operator, measurement, task, step_scale:int=30.0, inner_steps:int=3.0):
         z0t = z0t.requires_grad_(True)
@@ -680,7 +680,7 @@ class SD3FlowDPS(SD3Euler):
  
  
 ###### Flowchef ###############
-@register_solver("flowchef_baseline")
+@register_solver("flowchef")
 class SD3FlowChef(SD3Euler):
     def data_consistency(self, z, z0t, operator, measurement, task):
         x0t = self.decode(z0t).float()
@@ -774,7 +774,7 @@ class SD3FlowChef(SD3Euler):
  
  
 ###### ReSample ###############
-@register_solver("resample_baseline")
+@register_solver("resample")
 class SD3ReSample(SD3Euler):
     def __init__(self, model_key = 'stabilityai/stable-diffusion-3.5-medium', device='cuda'):
         super().__init__(model_key, device)
@@ -886,7 +886,7 @@ class SD3ReSample(SD3Euler):
         return img, images
  
 ###### Flower ###############
-@register_solver("flower_baseline")
+@register_solver("flower")
 class SD3Flower(SD3Euler):
     def proximal_dc(self, z0t, operator, measurement, task,
                     step_scale: float = 15.0,
