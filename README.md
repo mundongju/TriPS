@@ -171,7 +171,7 @@ bash run_eval_patch.sh fid results/TriPS-T/sr_bicubic/label results/TriPS-T/sr_b
 bash run_eval_patch.sh kid results/TriPS-T/sr_bicubic/label results/TriPS-T/sr_bicubic/recon 192
 ```
 
-### Full-reference metrics (PSNR / SSIM / FID / LPIPS) — `eval.py`
+### Full-reference metrics (PSNR / SSIM / LPIPS) — `eval.py`
 
 `eval.py` exposes a unified set of metric tags. Pass one or more to `--metric` (`--path1` = reconstruction dir, `--path2` = ground-truth / label dir):
 
