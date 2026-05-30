@@ -4,11 +4,13 @@
 
 ### Optimizing Guidance and Stochasticity Schedules &nbsp;·&nbsp; ICML 2026
 
-**Junseo Bang**<sup>1\*</sup> · **Dong Ju Mun**<sup>1\*</sup> · **Hoigi Seo**<sup>1</sup> · **Seongmin Hong**<sup>2</sup> · **Se Young Chun**<sup>1,2,3</sup>
+**Junseo Bang**<sup>1,\*</sup> · **Dong Ju Mun**<sup>1,\*</sup> · **Hoigi Seo**<sup>1</sup> · **Seongmin Hong**<sup>2</sup> · **Se Young Chun**<sup>1,2,3</sup>
 
-<sup>1</sup>ECE · <sup>2</sup>INMC · <sup>3</sup>IPAI &amp; AIIS, Seoul National University &nbsp; (<sup>\*</sup>equal contribution)
+<sup>1</sup>Dept. of Electrical and Computer Engineering &nbsp;·&nbsp; <sup>2</sup>INMC &nbsp;·&nbsp; <sup>3</sup>IPAI &amp; AIIS<br>
+Seoul National University, Republic of Korea<br>
+<sup>\*</sup>Equal contribution &nbsp;·&nbsp; Correspondence to: Se Young Chun (`sychun@snu.ac.kr`)
 
-[![Paper](https://img.shields.io/badge/Paper-PMLR%20306-b31b1b.svg)](https://github.com/mundongju/TriPS)
+[![Paper](https://img.shields.io/badge/Paper-arXiv%202605.26470-b31b1b.svg)](https://arxiv.org/abs/2605.26470)
 [![Code](https://img.shields.io/badge/GitHub-TriPS-181717.svg?logo=github)](https://github.com/mundongju/TriPS)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -16,7 +18,28 @@
 
 ---
 
-## TL;DR
+<div align="center">
+<img src="assets/method_figure.png" alt="TriPS triadic schedule optimization framework" width="100%">
+<br>
+<em>TriPS optimizes the schedules of DC guidance (β↓), CFG (λ↑), and stochasticity (η↓) via two complementary routes:
+<b>template-based search</b> (left) over functional priors, and <b>GRPO-based optimization</b> (right) of a Bernstein–Beta policy.</em>
+
+TriPS is a novel framework for posterior sampling through time-varying coordination of data consistency (DC) guidance, classifier-free guidance (CFG), and stochasticity.
+</div>
+
+---
+
+## Abstract
+
+⚡ Generative posterior sampling with diffusion models has become a dominant paradigm for solving imaging inverse problems. At its core lie **three coupled components** — **data consistency (DC) guidance**, **classifier-free guidance (CFG)**, and **stochasticity (STO)** — yet how to *schedule* them over the sampling trajectory has received little attention, leaving heuristic and suboptimal schedules.
+
+❓ We argue that the **interactions among all three components** are decisive. Our analysis shows that aggressive CFG early in sampling **conflicts with DC guidance**, hindering data-consistency convergence, while **calibrated stochasticity acts as a regularizer** that pulls trajectories back toward higher-probability regions.
+
+🔥 Building on these findings, **TriPS** reformulates posterior sampling as a **time-varying control problem** and optimizes schedules along a **triadic trend (DC ↓, CFG ↑, STO ↓)** through two routes: **template-based search** over functional priors for reliable baselines, and **GRPO-based reinforcement learning** for flexible temporal curves. Across linear inverse problems on flow-matching and diffusion backbones, TriPS outperforms state-of-the-art baselines in both data fidelity and perceptual realism.
+
+---
+
+## Introduction of TriPS
 
 Diffusion posterior sampling for inverse problems is governed by **three coupled components** — **data consistency (DC)**, **classifier-free guidance (CFG)**, and **stochasticity (STO)**. Their *schedules* are usually fixed by heuristics. **TriPS** treats sampling as a time-varying control problem and optimizes these schedules along a **triadic trend: DC ↓, CFG ↑, STO ↓**, via two routes:
 
@@ -35,31 +58,23 @@ Prior model: **Stable Diffusion 3.5-Medium**, `NFE = 28`.
 
 ---
 
-## Repository layout
+## Code Structure
 
 ```
 TriPS/
 ├── inference.py            # ⭐ unified inference: TriPS-T (template) or TriPS-G (GRPO ckpt)
 ├── run_inference.sh        # one-command demo on ./demo_images
-├── run_eval_patch.sh       # patch-FID / patch-KID
 ├── eval.py                 # full-reference metrics (PSNR / SSIM / LPIPS)
-├── compute_patch_FID.py · compute_patch_KID.py
+├── run_eval_patch.sh       # patch-FID / patch-KID
 ├── sd3_sampler_total.py    # TriPS-T sampler (template schedules)
 ├── sd3_sampler_ours_test.py# TriPS-G inference sampler (explicit schedules)
-├── grpo_schedule.py · custom_util.py · util.py · cores/ · functions/ · motionblur/   # shared
 ├── demo_images/            # FFHQ (faces) + DIV2K (scenes) + prompts
-├── TriPS.yaml
 │
-├── TriPS_T/                # TriPS-T grid search → Excel  (find the template schedule)
-│   ├── solve.py · run_search.sh · inp_masks/ · DIV2K_prompts.txt
-│
-└── TriPS_G/                # TriPS-G GRPO training  (+ export the reference policy)
-    ├── build_init_schedules.py   # TriPS-T schedules → init_load_file_fin/*.npz
-    ├── train_grpo_schedule_w_val.py · sd3_sampler_ours.py · iqa_reward.py · run_train.sh
-    └── init_load_file_fin/ · Datasets/ · exp/
+├── TriPS_T/                # TriPS-T grid search → finds the template schedule
+└── TriPS_G/                # TriPS-G GRPO training → exports the reference policy
 ```
 
-Shared modules live at the **root**; the runner scripts add the root to `PYTHONPATH` automatically.
+Shared modules (`grpo_schedule.py`, `util.py`, `cores/`, `functions/`, …) live at the **root**; the runner scripts add the root to `PYTHONPATH` automatically.
 
 ---
 
@@ -72,7 +87,9 @@ conda env create -f TriPS.yaml -n TriPS
 conda activate TriPS
 ```
 
-SD3.5-M is fetched from the Hugging Face Hub on first run (`huggingface-cli login` may be needed). One 24 GB GPU suffices with `--efficient_memory`.
+SD3.5-M is fetched from the Hugging Face Hub on first run (`huggingface-cli login` may be needed).
+
+**Single-GPU (24 GB) inference.** Pass `--efficient_memory`: the text encoder pre-computes the text embeddings and is then removed from the GPU, so the whole inverse problem can be solved on a single GPU with **24 GB of VRAM**.
 
 ---
 
@@ -107,6 +124,27 @@ Results: `results/<method>/<task>/{recon,label,input1,...}` + `eval_results.txt`
 
 ---
 
+## Supported tasks &amp; baselines
+
+**Tasks** (`--task`). Tasks in **bold** are the ones reported in our paper; the rest are additionally supported by the codebase.
+
+| Task | `--task` flag |
+|---|---|
+| Super-resolution (bicubic) | **`sr_bicubic`** |
+| Gaussian deblurring | **`deblur_gauss`** |
+| Motion deblurring | **`deblur_motion`** |
+| Inpainting (FFHQ) | **`inpainting`** |
+| Inpainting (DIV2K) | **`inpainting_DIV2K`** |
+| Super-resolution (avg-pool) | `sr_avgpool` |
+| Compressed sensing (Walsh–Hadamard) | `cs_walshhadamard` |
+| Compressed sensing (block-based) | `cs_blockbased` |
+| Uniform deblurring | `deblur_uni` |
+| Anisotropic deblurring | `deblur_aniso` |
+
+**Baseline methods.** The following baselines are available for comparison: `flowdps`, `flowchef`, `resample`, `flower`. See [`sd3_sampler_TriPS_T.py`](sd3_sampler_TriPS_T.py) for how each baseline sampler is selected and configured.
+
+---
+
 ## Reproduce the schedules
 
 **TriPS-T (find template schedules → Excel).** Grid-searches `linear/log/exp` priors and logs an `eval_score` per run:
@@ -125,27 +163,57 @@ bash run_train.sh 1                        # see TriPS_G/README.md
 
 ## Evaluation
 
+### Patch-based distributional metrics (patch-FID / patch-KID)
+
 ```bash
 bash run_eval_patch.sh fid results/TriPS-T/sr_bicubic/label results/TriPS-T/sr_bicubic/recon 256
 bash run_eval_patch.sh kid results/TriPS-T/sr_bicubic/label results/TriPS-T/sr_bicubic/recon 192
 ```
 
-Paper setup: SD3.5-M, 28 NFE, noise `σ_n=0.03`, 1000 FFHQ / 800 DIV2K; SR ×8/×12 (bicubic), motion deblur (61×61, intensity 0.5), Gaussian deblur (σ=3.0). Metrics: PSNR / SSIM / FID / LPIPS.
+### Full-reference metrics (PSNR / SSIM / FID / LPIPS) — `eval.py`
+
+`eval.py` exposes a unified set of metric tags. Pass one or more to `--metric` (`--path1` = reconstruction dir, `--path2` = ground-truth / label dir):
+
+```bash
+# PSNR, SSIM
+python eval.py --path1 results/TriPS-T/sr_bicubic/recon \
+               --path2 results/TriPS-T/sr_bicubic/label \
+               --metric psnr ssim
+
+# LPIPS (both protocols at once)
+python eval.py --path1 results/TriPS-T/sr_bicubic/recon \
+               --path2 results/TriPS-T/sr_bicubic/label \
+               --metric lpips_FLAIR lpips_FlowDPS
+```
+
+**LPIPS protocols — what's the difference?** Both use LPIPS(VGG); they differ only in the resize policy before scoring, so that our numbers are directly comparable to each prior work's reported protocol:
+
+| Tag | Resize before LPIPS | Comparable to |
+|---|---|---|
+| `lpips_FLAIR` (= `lpips_flair`) | none — scored at **full resolution** | [FLAIR](https://github.com/prs-eth/FLAIR/) |
+| `lpips_FlowDPS` (= `lpips_flowdps`) | images resized to **224×224** | [FlowDPS](https://github.com/FlowDPS-Inverse/FlowDPS/tree/main) |
+
+> Use `lpips_FLAIR` to match the FLAIR evaluation protocol and `lpips_FlowDPS` to match the FlowDPS protocol; the two casings (`lpips_FLAIR`/`lpips_flair`, `lpips_FlowDPS`/`lpips_flowdps`) are registered identically.
+
+**Paper setup.** SD3.5-M, 28 NFE, noise `σ_n=0.03`, 1000 FFHQ / 800 DIV2K; SR ×8/×12 (bicubic), motion deblur (61×61, intensity 0.5), Gaussian deblur (σ=3.0). Metrics: PSNR / SSIM / FID / LPIPS.
 
 ---
 
 ## Citation
 
 ```bibtex
-@inproceedings{bang2026trips,
-  title     = {Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems:
-               Optimizing Guidance and Stochasticity Schedules},
-  author    = {Bang, Junseo and Mun, Dong Ju and Seo, Hoigi and Hong, Seongmin and Chun, Se Young},
-  booktitle = {International Conference on Machine Learning (ICML)},
-  year      = {2026}, series = {PMLR}, volume = {306}
+@misc{bang2026triadicdynamicsawarediffusion,
+  title         = {Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse
+                   Problems: Optimizing Guidance and Stochasticity Schedules},
+  author        = {Junseo Bang and Dong Ju Mun and Hoigi Seo and Seongmin Hong and Se Young Chun},
+  year          = {2026},
+  eprint        = {2605.26470},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2605.26470}
 }
 ```
 
-## Acknowledgements & License
+## Acknowledgements &amp; License
 
 Builds on [FlowDPS](https://github.com/FlowDPS-Inverse/FlowDPS), [Stable Diffusion 3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) (🤗 `diffusers`), and [motionblur](https://github.com/LeviBorodenko/motionblur). Code released under the [MIT License](LICENSE); SD3.5 weights follow the Stability AI Community License.
