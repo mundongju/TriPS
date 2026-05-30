@@ -38,9 +38,3 @@ Use the root [`inference.py`](../inference.py) with the trained checkpoint:
 GRPO_CKPT=<workdir>/ckpts/grpo_schedule_ckpt_sr_bicubic_itXXXX.pt \
     bash ../run_inference.sh TriPS-G 0
 ```
-
-## Files
-
-`build_init_schedules.py` · `train_grpo_schedule_w_val.py` · `grpo_schedule` (at root) ·
-`sd3_sampler_ours.py` (training sampler) · `iqa_reward.py` · `run_train.sh` ·
-`init_load_file_fin/`, `Datasets/`, `exp/inp_masks/`.
