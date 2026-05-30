@@ -38,4 +38,4 @@ python solve.py \
 
 ## Files
 
-`solve.py` (single-run + Excel logging) · `run_search.sh` (template grid) · `inp_masks/`, `DIV2K_prompts.txt`.
+`solve.py` (single-run + Excel logging) · `run_search.sh` (template grid).
