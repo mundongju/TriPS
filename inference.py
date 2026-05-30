@@ -60,7 +60,7 @@ TRIPS_T_PRESETS = {
     ("DIV2K", "deblur_motion"): dict(function_dc="linear",    function_cfg="exponential", function_sto="linear",
                                      step_scale=350.0, step_scale_2=150.0, stochasticity_weight=1.0, operator_imp="FFT", deg_scale=61),
     ("FFHQ",  "sr_bicubic"):    dict(function_dc="linear",    function_cfg="logarithm",   function_sto="logarithm",
-                                     step_scale=250.0, step_scale_2=40.0,  stochasticity_weight=1.0, operator_imp="SVD", deg_scale=8),
+                                     step_scale=250.0, step_scale_2=50.0,  stochasticity_weight=1.0, operator_imp="SVD", deg_scale=8),
     ("FFHQ",  "deblur_gauss"):  dict(function_dc="logarithm", function_cfg="logarithm",   function_sto="logarithm",
                                      step_scale=200.0, step_scale_2=100.0, stochasticity_weight=1.0, operator_imp="SVD", deg_scale=3),
     ("FFHQ",  "deblur_motion"): dict(function_dc="linear",    function_cfg="exponential", function_sto="linear",
