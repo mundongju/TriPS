@@ -9,6 +9,21 @@ row is the confirmed TriPS-T schedule.
 > `run_search.sh` adds the repo root to `PYTHONPATH` and `cd`s here, so the shared modules
 > (`util`, `cores`, `functions`, `sd3_sampler_total`, `eval`, `custom_util` at the root) import fine.
 
+## Dataset
+Place the evaluation images under `./datasets/` in two subfolders:
+
+```
+datasets/
+├── FFHQ_1000/     # 00000.png ... 00999.png   (1000 FFHQ images)
+└── DIV2K_800/     # 0001.png  ... 0800.png    (800 DIV2K images)
+```
+
+- **FFHQ** — download from the official [FFHQ repository](https://github.com/NVlabs/ffhq-dataset),
+  take `00000.png`–`00999.png` (the first 1000 images) and put them in `datasets/FFHQ_1000/`.
+- **DIV2K** — download `DIV2K_train_HR` from the official
+  [DIV2K page](https://data.vision.ee.ethz.ch/cvl/DIV2K/), take `0001.png`–`0800.png`
+  (the first 800 images) and put them in `datasets/DIV2K_800/`.
+
 ## Grid search (→ Excel)
 
 ```bash
