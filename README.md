@@ -1,6 +1,6 @@
 <div align="center">
 
-# [ICML 26] Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems: Optimizing Guidance and Stochasticity Schedules
+# [ICML 2026] Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems: Optimizing Guidance and Stochasticity Schedules
 
 **Junseo Bang**<sup>1,\*</sup> · **Dong Ju Mun**<sup>1,\*</sup> · **Hoigi Seo**<sup>1</sup> · **Seongmin Hong**<sup>2</sup> · **Se Young Chun**<sup>1,2,3</sup>
 
