@@ -18,10 +18,6 @@ Seoul National University, Republic of Korea<br>
 
 <div align="center">
 <img src="assets/TriPS_main_figure.png" alt="TriPS triadic schedule optimization framework" width="100%">
-<br>
-<em>TriPS optimizes the schedules of DC guidance (β↓), CFG (λ↑), and stochasticity (η↓) via two complementary routes:
-<b>template-based search</b> (left) over functional priors, and <b>GRPO-based optimization</b> (right) of a Bernstein–Beta policy.</em>
-
 
 TriPS is a novel framework for posterior sampling through time-varying coordination of data consistency (DC) guidance, classifier-free guidance (CFG), and stochasticity.
 </div>
