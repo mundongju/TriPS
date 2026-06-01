@@ -28,35 +28,6 @@ TriPS is a novel framework for posterior sampling through time-varying coordinat
 
 ---
 
-## Abstract
-
-⚡ Generative posterior sampling with diffusion models has become a dominant paradigm for solving imaging inverse problems. At its core lie **three coupled components** — **data consistency (DC) guidance**, **classifier-free guidance (CFG)**, and **stochasticity (STO)** — yet how to *schedule* them over the sampling trajectory has received little attention, leaving heuristic and suboptimal schedules.
-
-❓ We argue that the **interactions among all three components** are decisive. Our analysis shows that aggressive CFG early in sampling **conflicts with DC guidance**, hindering data-consistency convergence, while **calibrated stochasticity acts as a regularizer** that pulls trajectories back toward higher-probability regions.
-
-🔥 Building on these findings, **TriPS** reformulates posterior sampling as a **time-varying control problem** and optimizes schedules along a **triadic trend (DC ↓, CFG ↑, STO ↓)** through two routes: **template-based search** over functional priors for reliable baselines, and **GRPO-based reinforcement learning** for flexible temporal curves. Across linear inverse problems on flow-matching and diffusion backbones, TriPS outperforms state-of-the-art baselines in both data fidelity and perceptual realism.
-
----
-
-## Introduction of TriPS
-
-Diffusion posterior sampling for inverse problems is governed by **three coupled components** — **data consistency (DC)**, **classifier-free guidance (CFG)**, and **stochasticity (STO)**. Their *schedules* are usually fixed by heuristics. **TriPS** treats sampling as a time-varying control problem and optimizes these schedules along a **triadic trend: DC ↓, CFG ↑, STO ↓**, via two routes:
-
-| | What | How |
-|---|---|---|
-| **TriPS-T** | training-free **template** schedules | grid search over `linear / logarithm / exponential` priors → [`TriPS_T/`](TriPS_T) |
-| **TriPS-G** | learned **GRPO** schedules | RL fine-tuning of the schedule, initialized from TriPS-T → [`TriPS_G/`](TriPS_G) |
-
-| Component | Code key | Trend |
-|---|---|---|
-| Data consistency (gradient step) | `step_scale` | ↓ |
-| Classifier-free guidance | `cfg` | ↑ |
-| Stochasticity (noise injection) | `eta` | ↓ |
-
-Prior model: **Stable Diffusion 3.5-Medium**, `NFE = 28`.
-
----
-
 ## Code Structure
 
 ```
@@ -100,7 +71,7 @@ Run a **fixed, already-found schedule** on the demo images. Tasks: `0`=SR×8, `1
 # TriPS-T  (training-free template schedule)
 bash run_inference.sh TriPS-T 0
 
-# TriPS-G  (learned schedule; needs a trained checkpoint)
+# TriPS-G  (GRPO-based learned schedule; needs a trained checkpoint)
 GRPO_CKPT=/path/to/grpo_schedule_ckpt_sr_bicubic_itXXXX.pt bash run_inference.sh TriPS-G 0
 ```
 
@@ -125,33 +96,28 @@ Results: `results/<method>/<task>/{recon,label,input1,...}` + `eval_results.txt`
 
 ## Supported tasks &amp; baselines
 
-**Tasks** (`--task`). Tasks in **bold** are the ones reported in our paper; the rest are additionally supported by the codebase.
+**Tasks** (`--task`). Tasks in **bold** are the ones reported in our main paper; the rest are additionally reported in Appendix.
 
 | Task | `--task` flag |
 |---|---|
 | Super-resolution (bicubic) | **`sr_bicubic`** |
 | Gaussian deblurring | **`deblur_gauss`** |
 | Motion deblurring | **`deblur_motion`** |
-| Inpainting (FFHQ) | **`inpainting`** |
-| Inpainting (DIV2K) | **`inpainting_DIV2K`** |
-| Super-resolution (avg-pool) | `sr_avgpool` |
-| Compressed sensing (Walsh–Hadamard) | `cs_walshhadamard` |
-| Compressed sensing (block-based) | `cs_blockbased` |
-| Uniform deblurring | `deblur_uni` |
-| Anisotropic deblurring | `deblur_aniso` |
+| Inpainting (FFHQ) | `inpainting` |
+| Inpainting (DIV2K) | `inpainting_DIV2K` |
 
 **Baseline methods.** The following baselines are available for comparison: `flowdps`, `flowchef`, `resample`, `flower`. See [`sd3_sampler_TriPS_T.py`](sd3_sampler_TriPS_T.py) for how each baseline sampler is selected and configured.
 
 ---
 
-## Reproduce the schedules
+## How to do Triadic Schedule Optimization (TriPS-T & TriPS-G)
 
 **TriPS-T (find template schedules → Excel).** Grid-searches `linear/log/exp` priors and logs an `eval_score` per run:
 ```bash
 cd TriPS_T && bash run_search.sh 0      # see TriPS_T/README.md
 ```
 
-**TriPS-G (train the learned schedule).** Initialized from the TriPS-T reference policy:
+**TriPS-G (train the GRPO-based learned schedule).** Initialized from the TriPS-T reference policy:
 ```bash
 cd TriPS_G
 python build_init_schedules.py --verify   # TriPS-T schedules → init_load_file_fin/*.npz
