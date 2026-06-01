@@ -19,7 +19,7 @@ Seoul National University, Republic of Korea<br>
 <div align="center">
 <img src="assets/TriPS_main_figure.png" alt="TriPS triadic schedule optimization framework" width="100%">
 
-TriPS is a novel framework for posterior sampling through time-varying coordination of data consistency (DC) guidance, classifier-free guidance (CFG), and stochasticity.
+<em> <b>TriPS</b> is a novel framework for posterior sampling through time-varying coordination of data consistency (DC) guidance, classifier-free guidance (CFG), and stochasticity.</em> 
 </div>
 
 ---
