@@ -27,8 +27,8 @@
   <div class="hero2-scrim" aria-hidden="true"></div>
 
   <div class="hero2-card">
-    <h1 class="title is-2 paper-title">Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems</h1>
-    <p class="subtitle is-4 paper-subtitle">Optimizing Guidance and Stochasticity Schedules</p>
+    <h1 class="title is-2 paper-title">Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems:</h1>
+    <p class="title is-2 paper-subtitle">Optimizing Guidance and Stochasticity Schedules</p>
     <div class="venue-badge"><i class="fa-solid fa-star"></i>&nbsp; ICML 2026</div>
 
     <div class="author-list">
@@ -57,16 +57,17 @@
 <section class="section">
   <div class="container is-max-desktop">
     <p class="section-tag has-text-centered">Key Idea</p>
-    <h2 class="title is-3 has-text-centered">Posterior sampling as a time-varying control problem</h2>
+    <h2 class="title is-3 has-text-centered">Posterior sampling as an optimization problem of time-varying schedules</h2>
     <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.6rem;">
-      Generative posterior sampling for inverse problems combines three components: <b>data consistency (DC) guidance</b>,
-      <b>classifier-free guidance (CFG)</b>, and <b>stochasticity</b>. While prior arts focus on how to <i>develop</i> each
-      component, less attention has been given to <i>how to schedule</i> them, leading to heuristically fixed or partially
-      adjusted, suboptimal schedules. TriPS instead reformulates posterior sampling as a <b>time-varying control problem</b>
-      and jointly optimizes the three schedules along a triadic trend.
+      Generative posterior sampling for inverse problems usually consists of three main components:
+      <b>data consistency (DC) guidance</b>, <b>classifier-free guidance (CFG)</b>, and <b>stochasticity</b>.
+      While prior arts have focused on how to <i>develop</i> each or all components, less attention has been given to
+      <i>how to schedule</i> them, leading to heuristically fixed or partially adjusted suboptimal schedules. TriPS instead
+      reformulates posterior sampling as an <b>optimization problem of time-varying schedules</b> and jointly optimizes the
+      three schedules along a triadic trend.
     </p>
 
-    <figure class="fig" style="max-width:430px;margin:0 auto;">
+    <figure class="fig" style="max-width:600px;margin:0 auto;">
       <div class="fig-frame"><img src="static/images/Key_Idea_triadic.jpg" alt="TriPS key idea: the triadic coupling"></div>
       <figcaption>
         The three components form a <b>coupled triad</b>: aggressive CFG early in sampling conflicts with DC guidance and
@@ -79,15 +80,15 @@
     <div class="pillars">
       <div class="pillar">
         <h4><span class="dot" style="background:var(--dc)"></span> DC guidance · β(t) <span class="trend" style="color:var(--dc)">&#8595;</span></h4>
-        <p>Set high early to strongly enforce data consistency with the measurement, then reduced to avoid over-enforcing consistency, which can inject measurement noise into the output.</p>
+        <p>High early to strongly enforce data consistency, then reduced to avoid over-enforcing it.</p>
       </div>
       <div class="pillar">
         <h4><span class="dot" style="background:var(--cfg)"></span> CFG · λ(t) <span class="trend" style="color:var(--cfg)">&#8593;</span></h4>
-        <p>Kept low early to suppress the early-stage guidance conflict, then increased to leverage its mode-seeking property and sharpen semantics for enhanced fidelity.</p>
+        <p>Low early to suppress the guidance conflict, then increased to sharpen semantics.</p>
       </div>
       <div class="pillar">
         <h4><span class="dot" style="background:var(--sto)"></span> Stochasticity · η(t) <span class="trend" style="color:var(--sto)">&#8595;</span></h4>
-        <p>Set high early to regularize the off-manifold phenomenon induced by DC guidance and CFG, then annealed, since late-stage stochasticity introduces sampling errors.</p>
+        <p>High early to regularize the off-manifold phenomenon, then annealed to reduce sampling error.</p>
       </div>
     </div>
   </div>
@@ -130,7 +131,7 @@
       sampling trajectories toward higher-probability regions.
     </p>
 
-    <div class="columns is-variable is-6">
+    <div class="columns is-variable is-6 is-vcentered analysis-cols">
       <div class="column">
         <figure class="fig">
           <div class="fig-frame"><img src="static/images/Fig_Analysis_1.png" data-pdf="static/pdfs/Fig_Analysis_1.pdf" alt="Early stage guidance conflict"></div>
@@ -178,19 +179,17 @@
       <div class="column">
         <div class="pillar" style="height:100%">
           <h4>TriPS<sub>T</sub> · Template-based schedule search</h4>
-          <p>Each schedule is one of {linear, exponential, logarithmic} with bounded magnitudes (λ&#8712;[1, 6],
-          η&#8712;[0, 1], β&#8712;[β<sub>min</sub>, β<sub>max</sub>]). A grid search over the template triple maximizes a
-          multi-objective utility balancing fidelity (PSNR) and perceptual quality (LPIPS) on a small calibration set,
-          providing a robust baseline and a warm start for GRPO.</p>
+          <p>A coarse grid search over a discrete template family {linear, exponential, logarithmic} that satisfies the
+          triadic trend, maximizing a multi-objective utility of fidelity (PSNR) and perceptual quality (LPIPS). Provides a
+          robust baseline and a warm start for GRPO.</p>
         </div>
       </div>
       <div class="column">
         <div class="pillar" style="height:100%">
           <h4>TriPS<sub>G</sub> · GRPO-based schedule optimization</h4>
-          <p>Each schedule is a Bernstein polynomial whose coefficients are sampled from Beta distributions, so the convex
-          hull and partition-of-unity properties confine every curve to a physically valid range. The policy is optimized
-          with a clipped GRPO objective and a KL anchor to the TriPS<sub>T</sub> reference, driven by a hybrid reward that
-          combines distortion (PSNR) and perceptual metrics (LPIPS, CLIP-IQA+, Q-Align).</p>
+          <p>Each schedule is a Bernstein polynomial with coefficients sampled from Beta distributions, confining every curve
+          to a physically valid range. The policy is optimized with a clipped GRPO objective and a hybrid IQA reward
+          combining distortion and perceptual metrics.</p>
         </div>
       </div>
     </div>
