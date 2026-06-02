@@ -8,29 +8,33 @@ function pdfFallback(img){
   img.parentNode.replaceChild(emb, img);
 }
 
-/* ---- qualitative samples (FLAIR-style) ----
-   task order: srx8, gaussian_deblur, motion_deblur, srx12, inpainting
-   each row of the viewer: top = Measurement vs Ours, bottom = FlowDPS vs Ours */
+/* ---- qualitative samples ----
+   Each card shows two before/after sliders: top = Measurement vs Ours,
+   bottom = FlowDPS vs Ours. Several samples are shown per page (FLAIR style). */
 var QBASE = 'static/quali/';
-function S(task, label, idx, ours){ return {task:task, label:label, idx:idx, ours:ours,
-  meas:QBASE+task+'/'+idx+'_meas.jpg', flow:QBASE+task+'/'+idx+'_flow.jpg', oursImg:QBASE+task+'/'+idx+'_ours.jpg'}; }
+function S(dir, idx, ours){ return {
+  meas: QBASE+dir+'/'+idx+'_meas.jpg',
+  flow: QBASE+dir+'/'+idx+'_flow.jpg',
+  ours: QBASE+dir+'/'+idx+'_ours.jpg',
+  oursLabel: ours }; }
 var SAMPLES = [
-  S('srx8','Super-Resolution x8','0023','TriPS-G (Ours)'),
-  S('srx8','Super-Resolution x8','0026','TriPS-G (Ours)'),
-  S('srx8','Super-Resolution x8','0042','TriPS-G (Ours)'),
-  S('gaussian_deblur','Gaussian Deblurring','0038','TriPS-G (Ours)'),
-  S('gaussian_deblur','Gaussian Deblurring','0004','TriPS-G (Ours)'),
-  S('gaussian_deblur','Gaussian Deblurring','0187','TriPS-G (Ours)'),
-  S('motion_deblur','Motion Deblurring','0002','TriPS-G (Ours)'),
-  S('motion_deblur','Motion Deblurring','0011','TriPS-G (Ours)'),
-  S('motion_deblur','Motion Deblurring','0015','TriPS-G (Ours)'),
-  S('srx12','Super-Resolution x12','0030','TriPS-G (Ours)'),
-  S('srx12','Super-Resolution x12','0052','TriPS-G (Ours)'),
-  S('srx12','Super-Resolution x12','0183','TriPS-G (Ours)'),
-  S('inpainting','Inpainting','0054','TriPS-T (Ours)'),
-  S('inpainting','Inpainting','0407','TriPS-T (Ours)'),
-  S('inpainting','Inpainting','0120','TriPS-T (Ours)')
+  S('mod','0012','TriPS-G (Ours)'),
+  S('srx8','0026','TriPS-G (Ours)'),
+  S('mod','0064','TriPS-G (Ours)'),
+  S('gaussian_deblur','0038','TriPS-G (Ours)'),
+  S('gaussian_deblur','0004','TriPS-G (Ours)'),
+  S('gaussian_deblur','0187','TriPS-G (Ours)'),
+  S('motion_deblur','0002','TriPS-G (Ours)'),
+  S('motion_deblur','0011','TriPS-G (Ours)'),
+  S('motion_deblur','0015','TriPS-G (Ours)'),
+  S('srx12','0030','TriPS-G (Ours)'),
+  S('srx12','0052','TriPS-G (Ours)'),
+  S('mod','0240','TriPS-G (Ours)'),
+  S('inpainting','0054','TriPS-T (Ours)'),
+  S('inpainting','0407','TriPS-T (Ours)'),
+  S('inpainting','0120','TriPS-T (Ours)')
 ];
+var PER_PAGE = 3;
 
 /* build one before/after comparison slider into a container */
 function buildBA(container, beforeSrc, afterSrc, leftLabel, rightLabel){
@@ -60,14 +64,22 @@ function buildBA(container, beforeSrc, afterSrc, leftLabel, rightLabel){
   window.addEventListener('mouseup',up);        container.addEventListener('touchend',up);
 }
 
-function renderSample(i){
-  var s = SAMPLES[i];
-  document.getElementById('q-task').textContent = s.label;
-  document.getElementById('q-count').textContent = (i+1)+' / '+SAMPLES.length;
-  buildBA(document.getElementById('ba-top'), s.meas, s.oursImg, 'Measurement', s.ours);
-  buildBA(document.getElementById('ba-bot'), s.flow, s.oursImg, 'FlowDPS', s.ours);
-  var dots = document.querySelectorAll('.dot-btn');
-  dots.forEach(function(d,k){ d.classList.toggle('active', k===i); });
+function renderPage(p){
+  var grid = document.getElementById('q-grid');
+  grid.innerHTML='';
+  var start=p*PER_PAGE, end=Math.min(start+PER_PAGE, SAMPLES.length);
+  for(var i=start;i<end;i++){
+    var s=SAMPLES[i];
+    var card=document.createElement('div'); card.className='q-card';
+    var top=document.createElement('div'); top.className='ba';
+    var bot=document.createElement('div'); bot.className='ba';
+    card.appendChild(top); card.appendChild(bot); grid.appendChild(card);
+    buildBA(top, s.meas, s.ours, 'Measurement', s.oursLabel);
+    buildBA(bot, s.flow, s.ours, 'FlowDPS', s.oursLabel);
+  }
+  document.getElementById('q-count').textContent = (start+1)+'–'+end+' / '+SAMPLES.length;
+  var dots=document.querySelectorAll('.dot-btn');
+  dots.forEach(function(d,k){ d.classList.toggle('active', k===p); });
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -84,17 +96,19 @@ document.addEventListener('DOMContentLoaded', function(){
     var fb=document.getElementById('table1-fallback'); if(fb) fb.style.display='block';
   }); }
 
-  // qualitative gallery
+  // qualitative gallery (paged, several samples per page)
   if(document.getElementById('quali-viewer')){
-    var cur=0;
+    var pages=Math.ceil(SAMPLES.length/PER_PAGE), cur=0;
     var dotsWrap=document.getElementById('q-dots');
-    SAMPLES.forEach(function(_,k){ var b=document.createElement('button'); b.className='dot-btn';
-      b.addEventListener('click',function(){ cur=k; renderSample(cur); }); dotsWrap.appendChild(b); });
-    document.getElementById('q-prev').addEventListener('click',function(){ cur=(cur-1+SAMPLES.length)%SAMPLES.length; renderSample(cur); });
-    document.getElementById('q-next').addEventListener('click',function(){ cur=(cur+1)%SAMPLES.length; renderSample(cur); });
+    for(var k=0;k<pages;k++){ (function(kk){
+      var b=document.createElement('button'); b.className='dot-btn';
+      b.addEventListener('click',function(){ cur=kk; renderPage(cur); }); dotsWrap.appendChild(b);
+    })(k); }
+    document.getElementById('q-prev').addEventListener('click',function(){ cur=(cur-1+pages)%pages; renderPage(cur); });
+    document.getElementById('q-next').addEventListener('click',function(){ cur=(cur+1)%pages; renderPage(cur); });
     document.addEventListener('keydown',function(e){ if(e.key==='ArrowLeft') document.getElementById('q-prev').click();
       else if(e.key==='ArrowRight') document.getElementById('q-next').click(); });
-    renderSample(0);
+    renderPage(0);
   }
 
   // bibtex copy

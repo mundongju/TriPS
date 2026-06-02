@@ -57,36 +57,37 @@
 <section class="section">
   <div class="container is-max-desktop">
     <p class="section-tag has-text-centered">Key Idea</p>
-    <h2 class="title is-3 has-text-centered">Schedule the triad, not just its values</h2>
+    <h2 class="title is-3 has-text-centered">Posterior sampling as a time-varying control problem</h2>
     <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.6rem;">
-      Diffusion posterior sampling for inverse problems is driven by three components: <b>data consistency (DC) guidance</b>,
-      <b>classifier-free guidance (CFG)</b>, and <b>stochasticity (STO)</b>. Prior works mostly tune <i>how strong</i> each
-      component is, yet leave <i>how they evolve over time</i> fixed by heuristics. TriPS instead casts posterior sampling as a
-      <b>time-varying control problem</b> and jointly optimizes the three schedules.
+      Generative posterior sampling for inverse problems combines three components: <b>data consistency (DC) guidance</b>,
+      <b>classifier-free guidance (CFG)</b>, and <b>stochasticity</b>. While prior arts focus on how to <i>develop</i> each
+      component, less attention has been given to <i>how to schedule</i> them, leading to heuristically fixed or partially
+      adjusted, suboptimal schedules. TriPS instead reformulates posterior sampling as a <b>time-varying control problem</b>
+      and jointly optimizes the three schedules along a triadic trend.
     </p>
 
-    <figure class="fig" style="max-width:920px;margin:0 auto;">
+    <figure class="fig" style="max-width:430px;margin:0 auto;">
       <div class="fig-frame"><img src="static/images/Key_Idea_triadic.jpg" alt="TriPS key idea: the triadic coupling"></div>
       <figcaption>
-        The three components form a <b>coupled triad</b>. Aggressive CFG early in sampling pulls against DC guidance and
-        slows convergence to the measurement, whereas calibrated stochasticity pulls trajectories back toward
-        higher-probability regions. These observations motivate a single triadic trend:
-        <b>decreasing DC (β), increasing CFG (λ), and decreasing stochasticity (η)</b>.
+        The three components form a <b>coupled triad</b>: aggressive CFG early in sampling conflicts with DC guidance and
+        slows the decay of the measurement residual, while calibrated stochasticity regularizes the off-manifold phenomenon,
+        steering trajectories back toward higher-probability regions. These findings yield a single triadic scheduling
+        trend, a <b>monotonic decrease in β(t), increase in λ(t), and decrease in η(t)</b>.
       </figcaption>
     </figure>
 
     <div class="pillars">
       <div class="pillar">
         <h4><span class="dot" style="background:var(--dc)"></span> DC guidance · β(t) <span class="trend" style="color:var(--dc)">&#8595;</span></h4>
-        <p>Strong early on to lock global structure onto the measurement, then annealed so that over enforcing consistency does not inject measurement noise into the result.</p>
+        <p>Set high early to strongly enforce data consistency with the measurement, then reduced to avoid over-enforcing consistency, which can inject measurement noise into the output.</p>
       </div>
       <div class="pillar">
         <h4><span class="dot" style="background:var(--cfg)"></span> CFG · λ(t) <span class="trend" style="color:var(--cfg)">&#8593;</span></h4>
-        <p>Kept low early to avoid the conflict with DC guidance, then raised once the global structure is settled so that semantics are sharpened in the low noise regime.</p>
+        <p>Kept low early to suppress the early-stage guidance conflict, then increased to leverage its mode-seeking property and sharpen semantics for enhanced fidelity.</p>
       </div>
       <div class="pillar">
         <h4><span class="dot" style="background:var(--sto)"></span> Stochasticity · η(t) <span class="trend" style="color:var(--sto)">&#8595;</span></h4>
-        <p>High early to regularize the off manifold drift caused by DC and CFG, then annealed to reduce late stage sampling error and to tighten the match to the target distribution.</p>
+        <p>Set high early to regularize the off-manifold phenomenon induced by DC guidance and CFG, then annealed, since late-stage stochasticity introduces sampling errors.</p>
       </div>
     </div>
   </div>
@@ -94,35 +95,26 @@
 
 <!-- ===================== QUALITATIVE SAMPLES ===================== -->
 <section class="section bg-soft">
-  <div class="container is-max-desktop">
+  <div class="container is-max-widescreen">
     <p class="section-tag has-text-centered">Qualitative Samples</p>
     <h2 class="title is-3 has-text-centered">Linear inverse problems (SD3.5-M)</h2>
-    <p class="lead has-text-centered" style="max-width:820px;margin:0 auto 1.8rem;">
-      Top slider compares the <b>measurement</b> against <b>our reconstruction</b>; bottom slider compares
-      <b>FlowDPS</b> against <b>ours</b>. <b>Drag to compare, browse with the arrows</b> to move across five tasks
-      and fifteen samples.
+    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.8rem;">
+      For each sample, the top slider compares the <b>measurement</b> against <b>our reconstruction</b>, and the
+      bottom slider compares <b>FlowDPS</b> against <b>ours</b>. <b>Drag to compare, and browse with the arrows.</b>
     </p>
 
     <div class="quali-viewer" id="quali-viewer">
       <div class="quali-head">
-        <span class="task-chip" id="q-task">Super-Resolution x8</span>
-        <span class="samp-count" id="q-count">1 / 15</span>
+        <span class="samp-count" id="q-count">1&#8211;3 / 15</span>
       </div>
 
-      <button class="nav-arrow nav-prev" id="q-prev" aria-label="previous sample">&#8249;</button>
-      <button class="nav-arrow nav-next" id="q-next" aria-label="next sample">&#8250;</button>
+      <button class="nav-arrow nav-prev" id="q-prev" aria-label="previous samples">&#8249;</button>
+      <button class="nav-arrow nav-next" id="q-next" aria-label="next samples">&#8250;</button>
 
-      <div class="ba-row">
-        <div class="row-cap">Measurement &#8596; TriPS (Ours)</div>
-        <div class="ba" id="ba-top"></div>
-      </div>
-      <div class="ba-row">
-        <div class="row-cap">FlowDPS &#8596; TriPS (Ours)</div>
-        <div class="ba" id="ba-bot"></div>
-      </div>
+      <div class="q-grid" id="q-grid"></div>
 
       <div class="dots" id="q-dots"></div>
-      <p class="hint">Drag the handle to reveal each side. Inpainting uses TriPS-T; all other tasks use TriPS-G.</p>
+      <p class="hint">Drag the handle on any pair to reveal each side. Inpainting uses TriPS-T; the others use TriPS-G.</p>
     </div>
   </div>
 </section>
@@ -133,25 +125,27 @@
     <p class="section-tag has-text-centered">Analysis</p>
     <h2 class="title is-3 has-text-centered">Triadic Coupling Dynamics</h2>
     <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.8rem;">
-      We characterize DC guidance, CFG, and stochasticity as one interacting dynamical system, which exposes
-      why a carefully ordered schedule is needed rather than independently tuned constants.
+      We analyze the triadic coupling dynamics in posterior sampling, governed by DC guidance, CFG, and stochasticity.
+      We formalize the early-stage conflict between DC guidance and CFG, and demonstrate how stochasticity regularizes
+      sampling trajectories toward higher-probability regions.
     </p>
 
     <div class="columns is-variable is-6">
       <div class="column">
         <figure class="fig">
           <div class="fig-frame"><img src="static/images/Fig_Analysis_1.png" data-pdf="static/pdfs/Fig_Analysis_1.pdf" alt="Early stage guidance conflict"></div>
-          <figcaption><b>Early stage guidance conflict.</b> As the CFG scale grows, the DC and CFG update directions become
-          increasingly anti aligned in the early high noise regime. This conflict slows the decay of the measurement
-          residual and produces semantic hallucinations that drift away from the measurement.</figcaption>
+          <figcaption><b>Early-stage guidance conflict.</b> Since DC guidance and CFG originate from distinct objectives,
+          their update directions are misaligned. As the CFG scale increases, this early-stage conflict intensifies,
+          slowing the decay of the measurement residual and inducing semantic hallucinations that deviate from the
+          measurement.</figcaption>
         </figure>
       </div>
       <div class="column">
         <figure class="fig">
           <div class="fig-frame"><img src="static/images/Fig_Analysis_2_Final.png" data-pdf="static/pdfs/Fig_Analysis_2_Final.pdf" alt="Stochasticity as a regularizer"></div>
-          <figcaption><b>Stochasticity as a regularizer.</b> Stronger DC or CFG push the trajectory off manifold, lowering its
-          alignment with the score, whereas calibrated early stochasticity restores that alignment toward higher
-          probability regions, suppressing artifacts and improving perceptual fidelity.</figcaption>
+          <figcaption><b>Stochasticity as a regularizer.</b> Stronger DC guidance or CFG drives sampling away from
+          higher-probability trajectories, lowering its alignment with the score function, whereas appropriately scaled
+          stochasticity consistently improves this alignment, suppressing artifacts and restoring perceptual fidelity.</figcaption>
         </figure>
       </div>
     </div>
@@ -163,32 +157,40 @@
   <div class="container is-max-desktop">
     <p class="section-tag has-text-centered">Method</p>
     <h2 class="title is-3 has-text-centered">Triadic Schedule Optimization</h2>
+    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.6rem;">
+      To realize the triadic scheduling trend, TriPS comprises two complementary paradigms: a template-based schedule
+      search that identifies robust schedule curves from a discrete family of functional forms, and a GRPO-based schedule
+      optimization that captures complex temporal curves beyond the fixed functional templates.
+    </p>
     <figure class="fig">
       <div class="fig-frame"><img src="static/images/Fig_Method_Final.png" data-pdf="static/pdfs/Fig_Method_Final.pdf" alt="TriPS method overview"></div>
       <figcaption>
-        <b>(Left) TriPS<sub>T</sub></b> performs a template based search over a compact family
-        {linear, exp, log} that already satisfies the triadic trend, turning a high dimensional schedule search into a
-        low dimensional selection. <b>(Right) TriPS<sub>G</sub></b> uses a GRPO policy that samples Bernstein
-        coefficients from learnable Beta distributions, producing continuous schedules that are guaranteed to stay in
-        valid ranges, and is optimized by a hybrid image quality reward on the restored images.
+        <b>(Left) TriPS<sub>T</sub></b> explores a discrete search space defined by compact templates (Linear, Exp, Log)
+        that satisfy the triadic scheduling trend (β(t)&#8595;, λ(t)&#8593;, η(t)&#8595;), turning a high-dimensional
+        schedule search into a low-dimensional selection. <b>(Right) TriPS<sub>G</sub></b> enables continuous schedule
+        discovery beyond fixed functional forms: a policy π<sub>θ</sub> samples coefficients from learnable Beta
+        distributions to parameterize the schedules via Bernstein polynomials, strictly constraining each curve within a
+        valid range, and is updated by rewards derived from the restored images.
       </figcaption>
     </figure>
 
     <div class="columns" style="margin-top:1.5rem;">
       <div class="column">
         <div class="pillar" style="height:100%">
-          <h4>TriPS<sub>T</sub> · Template based search</h4>
-          <p>Each component is one of {linear, exponential, logarithmic} with bounded magnitudes (λ in [1, 6],
-          η in [0, 1], β in [β<sub>min</sub>, β<sub>max</sub>]). A grid search over the template triple maximizes a
-          fidelity and perception utility on a small calibration set, giving a robust baseline and a warm start for GRPO.</p>
+          <h4>TriPS<sub>T</sub> · Template-based schedule search</h4>
+          <p>Each schedule is one of {linear, exponential, logarithmic} with bounded magnitudes (λ&#8712;[1, 6],
+          η&#8712;[0, 1], β&#8712;[β<sub>min</sub>, β<sub>max</sub>]). A grid search over the template triple maximizes a
+          multi-objective utility balancing fidelity (PSNR) and perceptual quality (LPIPS) on a small calibration set,
+          providing a robust baseline and a warm start for GRPO.</p>
         </div>
       </div>
       <div class="column">
         <div class="pillar" style="height:100%">
-          <h4>TriPS<sub>G</sub> · GRPO optimization</h4>
-          <p>Schedules are Bernstein polynomials whose coefficients are sampled from Beta distributions, so the
-          convex hull and partition of unity keep every curve in range. A clipped GRPO objective with a KL anchor to the
-          TriPS<sub>T</sub> reference is driven by a hybrid reward (PSNR with LPIPS, CLIP-IQA+, and Q-Align).</p>
+          <h4>TriPS<sub>G</sub> · GRPO-based schedule optimization</h4>
+          <p>Each schedule is a Bernstein polynomial whose coefficients are sampled from Beta distributions, so the convex
+          hull and partition-of-unity properties confine every curve to a physically valid range. The policy is optimized
+          with a clipped GRPO objective and a KL anchor to the TriPS<sub>T</sub> reference, driven by a hybrid reward that
+          combines distortion (PSNR) and perceptual metrics (LPIPS, CLIP-IQA+, Q-Align).</p>
         </div>
       </div>
     </div>
@@ -227,11 +229,12 @@
   <div class="container is-max-desktop">
     <p class="section-tag has-text-centered">Ablation</p>
     <h2 class="title is-3 has-text-centered">Reward-guided Perception&#8211;Distortion Control</h2>
-    <figure class="fig" style="max-width:920px;margin:0 auto;">
+    <figure class="fig" style="max-width:660px;margin:0 auto;">
       <div class="fig-frame"><img src="static/images/Fig_Ablation_PD_Control_v2.png" data-pdf="static/pdfs/Fig_Ablation_PD_Control_v2.pdf" alt="Reward guided perception distortion control"></div>
-      <figcaption>By reweighting the distortion and perception terms in the GRPO reward, TriPS<sub>G</sub> traverses the
-      perception and distortion frontier. The learned curves keep the triadic trend while adding fine grained, sometimes
-      non monotonic, temporal structure that pushes the frontier beyond fixed functional templates.</figcaption>
+      <figcaption>By reweighting the distortion and perception terms of the hybrid reward, TriPS<sub>G</sub> navigates the
+      perception-distortion trade-off. The optimized schedules align with the triadic scheduling trend while exhibiting
+      fine-grained temporal variations, such as local non-monotonic fluctuations and magnitude shifts, that prove
+      critical for pushing the perception-distortion Pareto frontier.</figcaption>
     </figure>
   </div>
 </section>
