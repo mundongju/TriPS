@@ -6,21 +6,27 @@
 <title>TriPS · Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems</title>
 <meta name="description" content="TriPS (ICML 2026): optimizing guidance and stochasticity schedules for diffusion posterior sampling on inverse problems, via template-based search and GRPO.">
 <meta property="og:title" content="TriPS: Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems">
-<meta property="og:description" content="ICML 2026 — Optimizing Guidance and Stochasticity Schedules.">
+<meta property="og:description" content="ICML 2026. Optimizing Guidance and Stochasticity Schedules.">
 <meta property="og:type" content="website">
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.24/dist/css/bulma-carousel.min.css">
 <link rel="stylesheet" href="static/css/index.css">
 </head>
 <body>
 
 <!-- ===================== HERO ===================== -->
-<section class="hero-banner">
-  <div class="container is-max-desktop has-text-centered">
+<header class="hero2">
+  <div class="hero2-strip" aria-hidden="true">
+    <div class="htile"><img class="ht-a" src="static/hero/srx8_input.jpg" alt=""><img class="ht-b" src="static/hero/srx8_recon.jpg" alt=""></div>
+    <div class="htile"><img class="ht-a" src="static/hero/srx12_input.jpg" alt=""><img class="ht-b" src="static/hero/srx12_recon.jpg" alt=""></div>
+    <div class="htile"><img class="ht-a" src="static/hero/gd_input.jpg" alt=""><img class="ht-b" src="static/hero/gd_recon.jpg" alt=""></div>
+    <div class="htile"><img class="ht-a" src="static/hero/md_input.jpg" alt=""><img class="ht-b" src="static/hero/md_recon.jpg" alt=""></div>
+  </div>
+  <div class="hero2-scrim" aria-hidden="true"></div>
+
+  <div class="hero2-card">
     <h1 class="title is-2 paper-title">Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems</h1>
     <p class="subtitle is-4 paper-subtitle">Optimizing Guidance and Stochasticity Schedules</p>
     <div class="venue-badge"><i class="fa-solid fa-star"></i>&nbsp; ICML 2026</div>
@@ -40,249 +46,209 @@
     <p class="eqcontrib"><sup class="sup">*</sup>Equal contribution &nbsp;·&nbsp; Correspondence: <a href="mailto:sychun@snu.ac.kr">sychun@snu.ac.kr</a></p>
 
     <div class="link-buttons">
-      <a class="btn-pill" href="static/pdfs/TriPS_arxiv.pdf"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a>
-      <a class="btn-pill disabled" href="#" title="coming soon"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a>
+      <a class="btn-pill" href="https://arxiv.org/abs/2605.26470" target="_blank" rel="noopener"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a>
       <a class="btn-pill" href="https://github.com/mundongju/TriPS" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a>
       <a class="btn-pill" href="#bibtex"><span class="icon"><i class="fas fa-quote-right"></i></span><span>BibTeX</span></a>
     </div>
   </div>
+</header>
 
-  <!-- Triad schematic teaser -->
-  <div class="container is-max-desktop" style="margin-top:2.2rem;">
-    <div class="triad-card">
-      <svg viewBox="0 0 800 300" width="100%" role="img" aria-label="Triadic schedule trend: DC decreasing, CFG increasing, stochasticity decreasing">
-        <defs>
-          <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill="#9aa4b2"/>
-          </marker>
-        </defs>
-        <!-- gridlines -->
-        <g stroke="#eef1f6" stroke-width="1">
-          <line x1="80" y1="40" x2="720" y2="40"/>
-          <line x1="80" y1="95" x2="720" y2="95"/>
-          <line x1="80" y1="150" x2="720" y2="150"/>
-          <line x1="80" y1="205" x2="720" y2="205"/>
-        </g>
-        <!-- axes -->
-        <line x1="80" y1="40" x2="80" y2="262" stroke="#9aa4b2" stroke-width="1.5" marker-start="url(#arrow)"/>
-        <line x1="80" y1="260" x2="724" y2="260" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arrow)"/>
-        <text x="86" y="34" font-size="13" fill="#5a6675">scale</text>
-        <text x="84" y="282" font-size="13" fill="#5a6675">early&nbsp;·&nbsp;high noise</text>
-        <text x="610" y="282" font-size="13" fill="#5a6675">late&nbsp;·&nbsp;low noise</text>
-
-        <!-- DC beta (decreasing, red) -->
-        <path d="M80,58 C 220,105 320,150 400,152 S 600,215 720,232" fill="none" stroke="#e23b3b" stroke-width="3.5" stroke-dasharray="0" />
-        <!-- CFG lambda (increasing, green) -->
-        <path d="M80,234 C 200,175 300,140 400,115 S 600,66 720,51" fill="none" stroke="#2f9e44" stroke-width="3.5"/>
-        <!-- STO eta (high then late drop, blue) -->
-        <path d="M80,51 C 280,55 360,68 480,80 C 580,92 620,170 680,216 C 700,236 712,248 720,253" fill="none" stroke="#1c7ed6" stroke-width="3.5"/>
-      </svg>
-      <div class="triad-legend">
-        <span><i class="swatch" style="background:#e23b3b"></i> DC&nbsp;guidance&nbsp;β(t) <span class="tag-trend">decrease ↓</span></span>
-        <span><i class="swatch" style="background:#2f9e44"></i> CFG&nbsp;λ(t) <span class="tag-trend">increase ↑</span></span>
-        <span><i class="swatch" style="background:#1c7ed6"></i> Stochasticity&nbsp;η(t) <span class="tag-trend">decrease ↓</span></span>
-      </div>
-      <p class="has-text-centered tag-trend" style="margin-top:.6rem;">
-        TriPS coordinates the three components as one <b>time-varying control problem</b> following a triadic trend (schematic).
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ABSTRACT ===================== -->
+<!-- ===================== KEY IDEA ===================== -->
 <section class="section">
   <div class="container is-max-desktop">
-    <p class="section-tag has-text-centered">Abstract</p>
-    <div class="abstract-box lead">
-      Generative posterior sampling using diffusion models has emerged as a dominant paradigm for solving inverse
-      problems in imaging, which usually consists of three main components: <b>data consistency (DC) guidance</b>,
-      <b>classifier-free guidance (CFG)</b> and <b>stochasticity</b>. While prior arts have focused on how to
-      <i>develop</i> each or all components, less attention has been given to how to <i>schedule</i> them, leading to
-      heuristically fixed or partially adjusted suboptimal schedules. In this work, we argue that the interactions
-      among all three components in terms of scheduling are crucial for significantly improved performance. Our
-      analysis shows that aggressive CFG early in sampling conflicts with DC guidance, while stochasticity brings the
-      trajectory back to higher-probability regions. Based on these findings, we propose <b>Triadic Dynamics Aware
-      Posterior Sampling (TriPS)</b>, which reformulates posterior sampling as a time-varying control problem and
-      optimizes schedules following a triadic trend of decreasing DC and stochasticity scales alongside increasing
-      CFG scale. TriPS achieves this through two strategies: <b>template-based search</b> over functional priors for
-      reliable baseline schedules, and <b>GRPO-based reinforcement learning</b> for more flexible temporal curves.
-      Experiments demonstrate TriPS outperforms state-of-the-art baselines in data fidelity and perceptual realism.
+    <p class="section-tag has-text-centered">Key Idea</p>
+    <h2 class="title is-3 has-text-centered">Schedule the triad, not just its values</h2>
+    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.6rem;">
+      Diffusion posterior sampling for inverse problems is driven by three components: <b>data consistency (DC) guidance</b>,
+      <b>classifier-free guidance (CFG)</b>, and <b>stochasticity (STO)</b>. Prior works mostly tune <i>how strong</i> each
+      component is, yet leave <i>how they evolve over time</i> fixed by heuristics. TriPS instead casts posterior sampling as a
+      <b>time-varying control problem</b> and jointly optimizes the three schedules.
+    </p>
+
+    <figure class="fig" style="max-width:920px;margin:0 auto;">
+      <div class="fig-frame"><img src="static/images/Key_Idea_triadic.jpg" alt="TriPS key idea: the triadic coupling"></div>
+      <figcaption>
+        The three components form a <b>coupled triad</b>. Aggressive CFG early in sampling pulls against DC guidance and
+        slows convergence to the measurement, whereas calibrated stochasticity pulls trajectories back toward
+        higher-probability regions. These observations motivate a single triadic trend:
+        <b>decreasing DC (β), increasing CFG (λ), and decreasing stochasticity (η)</b>.
+      </figcaption>
+    </figure>
+
+    <div class="pillars">
+      <div class="pillar">
+        <h4><span class="dot" style="background:var(--dc)"></span> DC guidance · β(t) <span class="trend" style="color:var(--dc)">&#8595;</span></h4>
+        <p>Strong early on to lock global structure onto the measurement, then annealed so that over enforcing consistency does not inject measurement noise into the result.</p>
+      </div>
+      <div class="pillar">
+        <h4><span class="dot" style="background:var(--cfg)"></span> CFG · λ(t) <span class="trend" style="color:var(--cfg)">&#8593;</span></h4>
+        <p>Kept low early to avoid the conflict with DC guidance, then raised once the global structure is settled so that semantics are sharpened in the low noise regime.</p>
+      </div>
+      <div class="pillar">
+        <h4><span class="dot" style="background:var(--sto)"></span> Stochasticity · η(t) <span class="trend" style="color:var(--sto)">&#8595;</span></h4>
+        <p>High early to regularize the off manifold drift caused by DC and CFG, then annealed to reduce late stage sampling error and to tighten the match to the target distribution.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ===================== THE TRIAD ===================== -->
+<!-- ===================== QUALITATIVE SAMPLES ===================== -->
 <section class="section bg-soft">
   <div class="container is-max-desktop">
-    <p class="section-tag has-text-centered">Key idea</p>
-    <h2 class="title is-3 has-text-centered">A coupled triad, scheduled jointly</h2>
-    <p class="lead has-text-centered" style="max-width:820px;margin:0 auto 2rem;">
-      Posterior sampling is driven by three forces. Treating their <em>schedules</em> — not just their values — as the
-      object of optimization unlocks a markedly better perception–distortion trade-off.
+    <p class="section-tag has-text-centered">Qualitative Samples</p>
+    <h2 class="title is-3 has-text-centered">Drag to compare, browse with the arrows</h2>
+    <p class="lead has-text-centered" style="max-width:820px;margin:0 auto 1.8rem;">
+      Top slider compares the <b>measurement</b> against <b>our reconstruction</b>; bottom slider compares
+      <b>FlowDPS</b> against <b>ours</b>. Use the side arrows to move across five tasks and fifteen samples.
     </p>
-    <div class="pillars">
-      <div class="pillar">
-        <h4><span class="dot" style="background:var(--trips-dc)"></span> Data consistency · β(t) <span class="trend" style="color:var(--trips-dc)">↓</span></h4>
-        <p>Strong early on to lock global structure to the measurement, then annealed to avoid over-enforcing and injecting measurement noise.</p>
+
+    <div class="quali-viewer" id="quali-viewer">
+      <div class="quali-head">
+        <span class="task-chip" id="q-task">Super-Resolution x8</span>
+        <span class="samp-count" id="q-count">1 / 15</span>
       </div>
-      <div class="pillar">
-        <h4><span class="dot" style="background:var(--trips-cfg)"></span> CFG · λ(t) <span class="trend" style="color:var(--trips-cfg)">↑</span></h4>
-        <p>Kept low early — aggressive CFG <b>conflicts</b> with DC guidance — then raised late to sharpen semantics once structure is set.</p>
+
+      <button class="nav-arrow nav-prev" id="q-prev" aria-label="previous sample">&#8249;</button>
+      <button class="nav-arrow nav-next" id="q-next" aria-label="next sample">&#8250;</button>
+
+      <div class="ba-row">
+        <div class="row-cap">Measurement &#8596; TriPS (Ours)</div>
+        <div class="ba" id="ba-top"></div>
       </div>
-      <div class="pillar">
-        <h4><span class="dot" style="background:var(--trips-sto)"></span> Stochasticity · η(t) <span class="trend" style="color:var(--trips-sto)">↓</span></h4>
-        <p>High early to <b>regularize</b> off-manifold drift back to higher-probability regions, then annealed to reduce late-stage sampling error.</p>
+      <div class="ba-row">
+        <div class="row-cap">FlowDPS &#8596; TriPS (Ours)</div>
+        <div class="ba" id="ba-bot"></div>
+      </div>
+
+      <div class="dots" id="q-dots"></div>
+      <p class="hint">Drag the handle to reveal each side. Inpainting uses TriPS-T; all other tasks use TriPS-G.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ANALYSIS ===================== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <p class="section-tag has-text-centered">Analysis</p>
+    <h2 class="title is-3 has-text-centered">Triadic Coupling Dynamics</h2>
+    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.8rem;">
+      We characterize DC guidance, CFG, and stochasticity as one interacting dynamical system, which exposes
+      why a carefully ordered schedule is needed rather than independently tuned constants.
+    </p>
+
+    <div class="columns is-variable is-6">
+      <div class="column">
+        <figure class="fig">
+          <div class="fig-frame"><img src="static/images/Fig_Analysis_1.png" data-pdf="static/pdfs/Fig_Analysis_1.pdf" alt="Early stage guidance conflict"></div>
+          <figcaption><b>Early stage guidance conflict.</b> As the CFG scale grows, the DC and CFG update directions become
+          increasingly anti aligned in the early high noise regime. This conflict slows the decay of the measurement
+          residual and produces semantic hallucinations that drift away from the measurement.</figcaption>
+        </figure>
+      </div>
+      <div class="column">
+        <figure class="fig">
+          <div class="fig-frame"><img src="static/images/Fig_Analysis_2_Final.png" data-pdf="static/pdfs/Fig_Analysis_2_Final.pdf" alt="Stochasticity as a regularizer"></div>
+          <figcaption><b>Stochasticity as a regularizer.</b> Stronger DC or CFG push the trajectory off manifold, lowering its
+          alignment with the score, whereas calibrated early stochasticity restores that alignment toward higher
+          probability regions, suppressing artifacts and improving perceptual fidelity.</figcaption>
+        </figure>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ===================== METHOD ===================== -->
-<section class="section">
+<section class="section bg-soft">
   <div class="container is-max-desktop">
     <p class="section-tag has-text-centered">Method</p>
-    <h2 class="title is-3 has-text-centered">Triadic schedule optimization</h2>
+    <h2 class="title is-3 has-text-centered">Triadic Schedule Optimization</h2>
     <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/images/Fig_Method_Final.png" data-pdf="static/pdfs/Fig_Method_Final.pdf" alt="TriPS method overview">
-      </div>
+      <div class="fig-frame"><img src="static/images/Fig_Method_Final.png" data-pdf="static/pdfs/Fig_Method_Final.pdf" alt="TriPS method overview"></div>
       <figcaption>
-        <b>Overview.</b> <b>(Left) TriPS<sub>T</sub></b> — a template-based search over a compact family
-        {<i>linear</i>, <i>exp</i>, <i>log</i>} that already satisfies the triadic trend (β↓, λ↑, η↓), turning a
-        high-dimensional schedule search into a low-dimensional selection. <b>(Right) TriPS<sub>G</sub></b> — a GRPO
-        policy samples Bernstein coefficients from learnable Beta distributions, yielding continuous schedules that
-        are guaranteed to stay within valid ranges; the policy is updated by a hybrid IQA reward on restored images.
+        <b>(Left) TriPS<sub>T</sub></b> performs a template based search over a compact family
+        {linear, exp, log} that already satisfies the triadic trend, turning a high dimensional schedule search into a
+        low dimensional selection. <b>(Right) TriPS<sub>G</sub></b> uses a GRPO policy that samples Bernstein
+        coefficients from learnable Beta distributions, producing continuous schedules that are guaranteed to stay in
+        valid ranges, and is optimized by a hybrid image quality reward on the restored images.
       </figcaption>
     </figure>
 
     <div class="columns" style="margin-top:1.5rem;">
       <div class="column">
         <div class="pillar" style="height:100%">
-          <h4>TriPS<sub>T</sub> · Template search</h4>
-          <p>Each schedule is one of {linear, exponential, logarithmic}, with magnitudes bounded
-          (λ∈[1,6], η∈[0,1], β∈[β<sub>min</sub>,β<sub>max</sub>]). A grid search over <code>𝒯³</code> maximizes a
-          fidelity–perception utility 𝒰(τ) on a small calibration set, giving a robust baseline <b>and</b> a
-          warm-start for GRPO.</p>
+          <h4>TriPS<sub>T</sub> · Template based search</h4>
+          <p>Each component is one of {linear, exponential, logarithmic} with bounded magnitudes (λ in [1, 6],
+          η in [0, 1], β in [β<sub>min</sub>, β<sub>max</sub>]). A grid search over the template triple maximizes a
+          fidelity and perception utility on a small calibration set, giving a robust baseline and a warm start for GRPO.</p>
         </div>
       </div>
       <div class="column">
         <div class="pillar" style="height:100%">
           <h4>TriPS<sub>G</sub> · GRPO optimization</h4>
-          <p>Schedules are Bernstein polynomials whose coefficients are sampled from Beta distributions
-          (convex-hull + partition-of-unity ⇒ always in range). The policy is optimized by a clipped GRPO objective
-          with a KL anchor to the TriPS<sub>T</sub> reference, driven by a hybrid reward (PSNR + LPIPS / CLIP-IQA+ / Q-Align).</p>
+          <p>Schedules are Bernstein polynomials whose coefficients are sampled from Beta distributions, so the
+          convex hull and partition of unity keep every curve in range. A clipped GRPO objective with a KL anchor to the
+          TriPS<sub>T</sub> reference is driven by a hybrid reward (PSNR with LPIPS, CLIP-IQA+, and Q-Align).</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===================== ANALYSIS ===================== -->
-<section class="section bg-soft">
-  <div class="container is-max-desktop">
-    <p class="section-tag has-text-centered">Analysis</p>
-    <h2 class="title is-3 has-text-centered">Why schedule the triad?</h2>
-
-    <div class="columns is-variable is-6">
-      <div class="column">
-        <figure class="fig">
-          <div class="fig-frame"><img src="static/images/Fig_Analysis_1.png" data-pdf="static/pdfs/Fig_Analysis_1.pdf" alt="Early-stage DC-CFG conflict"></div>
-          <figcaption><b>Early-stage guidance conflict.</b> As the CFG scale grows, the DC and CFG directions become
-          increasingly anti-aligned early in sampling, slowing the decay of the measurement residual and producing
-          semantic hallucinations that deviate from the measurement.</figcaption>
-        </figure>
-      </div>
-      <div class="column">
-        <figure class="fig">
-          <div class="fig-frame"><img src="static/images/Fig_Analysis_2_Final.png" data-pdf="static/pdfs/Fig_Analysis_2_Final.pdf" alt="Stochasticity as a regularizer"></div>
-          <figcaption><b>Stochasticity as a regularizer.</b> Stronger DC/CFG push the trajectory off-manifold
-          (lower alignment with the score), whereas calibrated early stochasticity restores alignment with
-          higher-probability regions — suppressing artifacts and improving perceptual fidelity.</figcaption>
-        </figure>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== QUALITATIVE ===================== -->
-<section class="section">
-  <div class="container is-max-desktop">
-    <p class="section-tag has-text-centered">Results</p>
-    <h2 class="title is-3 has-text-centered">Qualitative comparison</h2>
-    <p class="lead has-text-centered" style="max-width:820px;margin:0 auto 1.5rem;">
-      On FFHQ and DIV2K linear inverse problems, both TriPS variants suppress structural artifacts and noise that
-      remain in baseline reconstructions. <span class="tag-trend">(Best viewed zoomed-in.)</span>
-    </p>
-
-    <div class="carousel">
-      <div class="carousel-cell"><figure class="fig"><div class="fig-frame"><img src="static/images/Fig_Results_Quali.jpg" data-pdf="static/pdfs/Fig_Results_Quali.pdf" alt="Main qualitative comparison"></div><figcaption><b>Main comparison</b> — SR, motion- and Gaussian-deblurring across FFHQ &amp; DIV2K.</figcaption></figure></div>
-      <div class="carousel-cell"><figure class="fig"><div class="fig-frame"><img src="static/images/Appendix_add_qual_SR_x12_DIV2K.jpg" data-pdf="static/pdfs/Appendix_add_qual_SR_x12_DIV2K.pdf" alt="SR x12 DIV2K"></div><figcaption><b>Super-resolution ×12</b> — DIV2K.</figcaption></figure></div>
-      <div class="carousel-cell"><figure class="fig"><div class="fig-frame"><img src="static/images/Appendix_add_qual_MD_DIV2K.jpg" data-pdf="static/pdfs/Appendix_add_qual_MD_DIV2K.pdf" alt="Motion deblur DIV2K"></div><figcaption><b>Motion deblurring</b> — DIV2K.</figcaption></figure></div>
-      <div class="carousel-cell"><figure class="fig"><div class="fig-frame"><img src="static/images/Appendix_add_qual_GD_FFHQ.jpg" data-pdf="static/pdfs/Appendix_add_qual_GD_FFHQ.pdf" alt="Gaussian deblur FFHQ"></div><figcaption><b>Gaussian deblurring</b> — FFHQ.</figcaption></figure></div>
-      <div class="carousel-cell"><figure class="fig"><div class="fig-frame"><img src="static/images/Appendix_add_qual_SR_x12_FFHQ.jpg" data-pdf="static/pdfs/Appendix_add_qual_SR_x12_FFHQ.pdf" alt="SR x12 FFHQ"></div><figcaption><b>Super-resolution ×12</b> — FFHQ.</figcaption></figure></div>
-    </div>
-  </div>
-</section>
-
 <!-- ===================== QUANTITATIVE ===================== -->
-<section class="section bg-soft">
+<section class="section">
   <div class="container is-max-widescreen">
-    <p class="section-tag has-text-centered">Results</p>
-    <h2 class="title is-3 has-text-centered">Quantitative comparison</h2>
-    <p class="lead has-text-centered" style="max-width:880px;margin:0 auto 1.4rem;">
-      Linear inverse problems with the <b>SD3.5-M</b> flow-matching prior, averaged over <b>1,000 FFHQ</b> and
-      <b>800 DIV2K</b> samples, <b>28 NFEs</b>, Gaussian noise σ<sub>n</sub>=0.03.
-      <b>Bold</b> = best, <u>underline</u> = second best.
+    <p class="section-tag has-text-centered">Quantitative Comparison</p>
+    <h2 class="title is-3 has-text-centered">Linear inverse problems (SD3.5-M)</h2>
+    <p class="lead has-text-centered" style="max-width:880px;margin:0 auto 1.6rem;">
+      Averaged over 1,000 FFHQ and 800 DIV2K samples with 28 NFEs and Gaussian noise (σ<sub>n</sub> = 0.03).
+      Bold is best, underline is second best.
     </p>
-    <div class="table-scroll">
-      <table class="results" id="results-table"></table>
+    <div class="table-img">
+      <figure class="fig">
+        <div class="fig-frame">
+          <img id="table1-img" src="static/images/Table1.png" alt="Table 1: quantitative comparison">
+        </div>
+        <div class="table-fallback" id="table1-fallback" style="display:none;">
+          <p><b>Table 1 image not found.</b> Add the cropped table as <code>static/images/Table1.png</code>
+          (see the page README), or open it in the
+          <a href="static/pdfs/TriPS_arxiv.pdf" target="_blank" rel="noopener">paper PDF</a>.</p>
+        </div>
+        <figcaption>Quantitative comparison on linear inverse problems with the SD3.5-M flow matching prior
+        (Table 1 of the paper).</figcaption>
+      </figure>
     </div>
-    <p class="metric-note has-text-centered">
-      <span style="background:rgba(226,59,59,.12);padding:.05rem .4rem;border-radius:4px;">TriPS<sub>T</sub></span>
-      &nbsp;template-based &nbsp;·&nbsp;
-      <span style="background:rgba(47,158,68,.14);padding:.05rem .4rem;border-radius:4px;">TriPS<sub>G</sub></span>
-      &nbsp;GRPO-based. Metrics: PSNR / SSIM / FID / LPIPS / MUSIQ.
-    </p>
-
-    <hr class="soft">
-    <figure class="fig" style="max-width:920px;margin:0 auto;">
-      <div class="fig-frame"><img src="static/images/Fig_Ablation_PD_Control_v2.png" data-pdf="static/pdfs/Fig_Ablation_PD_Control_v2.pdf" alt="Perception-distortion control"></div>
-      <figcaption><b>Perception–distortion control.</b> The GRPO reward weighting lets TriPS<sub>G</sub> traverse the
-      perception–distortion frontier; the learned curves keep the triadic trend while adding fine-grained, sometimes
-      non-monotonic, temporal structure.</figcaption>
-    </figure>
   </div>
 </section>
 
-<!-- ===================== GENERALIZATION ===================== -->
-<section class="section">
+<!-- ===================== REWARD-GUIDED PD CONTROL ===================== -->
+<section class="section bg-soft">
   <div class="container is-max-desktop">
-    <p class="section-tag has-text-centered">Generalization</p>
-    <h2 class="title is-3 has-text-centered">Transfers across tasks &amp; solvers</h2>
+    <p class="section-tag has-text-centered">Ablation</p>
+    <h2 class="title is-3 has-text-centered">Reward-guided Perception&#8211;Distortion Control</h2>
     <figure class="fig" style="max-width:920px;margin:0 auto;">
-      <div class="fig-frame"><img src="static/images/Fig_Results_Generalization.jpg" data-pdf="static/pdfs/Fig_Results_Generalization.pdf" alt="Generalization results"></div>
-      <figcaption>A TriPS<sub>G</sub> schedule optimized for one task (SR ×8) transfers to unseen degradations, and
-      the triadic principle further extends to diffusion backbones (SD1.5) and to other solvers (FlowDPS, FLAIR),
-      consistently improving perceptual metrics while staying competitive on distortion.</figcaption>
+      <div class="fig-frame"><img src="static/images/Fig_Ablation_PD_Control_v2.png" data-pdf="static/pdfs/Fig_Ablation_PD_Control_v2.pdf" alt="Reward guided perception distortion control"></div>
+      <figcaption>By reweighting the distortion and perception terms in the GRPO reward, TriPS<sub>G</sub> traverses the
+      perception and distortion frontier. The learned curves keep the triadic trend while adding fine grained, sometimes
+      non monotonic, temporal structure that pushes the frontier beyond fixed functional templates.</figcaption>
     </figure>
   </div>
 </section>
 
 <!-- ===================== BIBTEX ===================== -->
-<section class="section bg-soft" id="bibtex">
+<section class="section" id="bibtex">
   <div class="container is-max-desktop bibtex">
     <p class="section-tag has-text-centered">Cite</p>
     <h2 class="title is-3 has-text-centered">BibTeX</h2>
     <button class="button is-dark is-small copy-btn" id="copy-bib"><span class="icon"><i class="fas fa-copy"></i></span><span>Copy</span></button>
-    <pre id="bibtex-text">@inproceedings{bang2026trips,
-  title     = {Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse
-               Problems: Optimizing Guidance and Stochasticity Schedules},
-  author    = {Bang, Junseo and Mun, Dong Ju and Seo, Hoigi and
-               Hong, Seongmin and Chun, Se Young},
-  booktitle = {Proceedings of the 43rd International Conference on Machine Learning (ICML)},
-  year      = {2026},
-  series    = {PMLR},
-  volume    = {306}
+    <pre id="bibtex-text">@misc{bang2026triadicdynamicsawarediffusion,
+  title         = {Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse
+                   Problems: Optimizing Guidance and Stochasticity Schedules},
+  author        = {Junseo Bang and Dong Ju Mun and Hoigi Seo and Seongmin Hong and Se Young Chun},
+  year          = {2026},
+  eprint        = {2605.26470},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2605.26470}
 }</pre>
   </div>
 </section>
@@ -291,71 +257,18 @@
 <footer class="footer">
   <div class="container is-max-desktop has-text-centered content">
     <p>
-      <a href="static/pdfs/TriPS_arxiv.pdf"><i class="fas fa-file-pdf"></i> Paper</a> &nbsp;·&nbsp;
+      <a href="https://arxiv.org/abs/2605.26470" target="_blank" rel="noopener"><i class="ai ai-arxiv"></i> arXiv</a> &nbsp;·&nbsp;
       <a href="https://github.com/mundongju/TriPS" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a> &nbsp;·&nbsp;
       <a href="mailto:sychun@snu.ac.kr"><i class="fas fa-envelope"></i> Contact</a>
     </p>
     <p style="font-size:.9rem;">
-      Website template borrowed from <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>,
-      with thanks to the <a href="https://inverseflair.github.io/" target="_blank" rel="noopener">FLAIR</a> project page for inspiration.
-      &nbsp;© 2026 The Authors. Content licensed under
-      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
+      Website template adapted from <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>,
+      with layout inspired by the <a href="https://inverseflair.github.io/" target="_blank" rel="noopener">FLAIR</a> project page.
+      &nbsp;Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
     </p>
   </div>
 </footer>
 
-<!-- ===================== scripts ===================== -->
-<script src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.24/dist/js/bulma-carousel.min.js"></script>
-<script>
-/* ---- data-driven quantitative table (#=best, ~=second) ---- */
-const TRIPS_TABLE = {
-  tasks: ['Super-Resolution ×8','Super-Resolution ×12','Motion Deblurring','Gaussian Deblurring'],
-  metrics: ['PSNR↑','SSIM↑','FID↓','LPIPS↓','MUSIQ↑'],
-  groups: [
-    { name: 'FFHQ (768×768)', rows: [
-      ['ReSample','24.65','0.708','98.07','0.196','32.06','22.96','0.632','172.19','0.357','21.09','25.54','0.747','96.62','0.216','31.65','26.37','0.746','97.47','0.160','31.50'],
-      ['FlowChef','27.53','0.759','57.24','0.147','49.05','26.38','0.731','110.15','0.209','38.70','24.88','0.716','63.48','0.237','39.22','27.30','0.754','46.40','0.152','44.26'],
-      ['FlowDPS','27.92','~0.772','~23.80','0.120','~54.36','26.84','0.745','30.54','~0.156','48.33','25.15','0.721','43.18','0.222','48.51','26.02','0.731','45.00','0.204','47.11'],
-      ['FLAIR','~28.88','0.768','55.51','0.123','52.26','27.25','0.752','~29.31','0.158','46.63','28.80','0.695','21.57','0.095','52.48','28.60','0.729','#18.41','0.090','~54.71'],
-      ['TriPS-T (Ours)','#29.03','#0.789','26.66','~0.113','53.65','#27.45','~0.754','35.13','0.161','~52.63','#31.20','~0.809','~17.28','~0.060','~63.52','#29.95','#0.804','25.02','~0.084','51.12'],
-      ['TriPS-G (Ours)','28.55','0.762','#22.18','#0.107','#61.69','~27.38','#0.762','#28.22','#0.154','#53.92','#31.20','#0.813','#15.89','#0.059','#64.37','~29.60','~0.782','~21.21','#0.074','#61.92']
-    ]},
-    { name: 'DIV2K (768×768)', rows: [
-      ['ReSample','20.55','0.535','75.67','0.238','26.82','19.54','0.459','119.22','0.372','20.57','21.47','0.588','61.79','0.222','31.17','21.74','0.559','80.79','0.221','24.22'],
-      ['FlowChef','22.08','0.561','47.47','0.213','41.70','20.88','0.508','84.28','0.297','35.94','19.62','0.482','74.01','0.366','41.24','21.57','0.532','52.84','0.251','39.52'],
-      ['FlowDPS','22.14','0.545','35.18','0.175','39.87','21.07','0.469','48.36','#0.251','33.47','19.88','0.473','52.23','0.322','40.01','20.46','0.473','58.56','0.307','36.80'],
-      ['FLAIR','~22.90','0.592','41.23','0.167','42.30','21.12','~0.520','~42.16','0.256','46.23','23.90','0.614','22.17','0.129','52.24','22.70','0.561','32.26','0.157','~44.96'],
-      ['TriPS-T (Ours)','#23.05','#0.607','~31.80','#0.158','~45.24','#21.27','0.518','43.74','~0.255','~50.14','#26.29','#0.728','~15.49','#0.066','~59.16','~23.94','#0.646','~28.57','~0.123','44.47'],
-      ['TriPS-G (Ours)','22.78','~0.594','#27.84','~0.163','#50.14','~21.13','#0.531','#37.48','0.257','#52.26','~26.19','~0.715','#14.94','#0.066','#59.89','#23.97','~0.644','#26.88','#0.121','#45.19']
-    ]}
-  ]
-};
-(function(){
-  const T = TRIPS_TABLE; const tbl = document.getElementById('results-table');
-  const cls = r => r.includes('TriPS-T') ? 'tript' : (r.includes('TriPS-G') ? 'tripg' : '');
-  function cell(v){
-    let c='';
-    if(v[0]==='#'){ c='best'; v=v.slice(1); }
-    else if(v[0]==='~'){ c='second'; v=v.slice(1); }
-    return '<td'+(c?` class="${c}"`:'')+'>'+v+'</td>';
-  }
-  let h='<thead><tr><th class="method" rowspan="2">Method</th>';
-  T.tasks.forEach(t=> h+=`<th colspan="5">${t}</th>`);
-  h+='</tr><tr>';
-  T.tasks.forEach(()=> T.metrics.forEach(m=> h+=`<th>${m}</th>`));
-  h+='</tr></thead><tbody>';
-  T.groups.forEach(g=>{
-    h+=`<tr class="group"><td class="method" colspan="21">${g.name}</td></tr>`;
-    g.rows.forEach(r=>{
-      h+=`<tr class="${cls(r[0])}"><td class="method">${r[0]}</td>`;
-      for(let i=1;i<r.length;i++){ h+=cell(r[i]); }
-      h+='</tr>';
-    });
-  });
-  h+='</tbody>';
-  tbl.innerHTML=h;
-})();
-</script>
 <script src="static/js/index.js"></script>
 </body>
 </html>
