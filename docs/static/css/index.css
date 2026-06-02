@@ -67,7 +67,7 @@ figure.fig figcaption b{ color:var(--ink); }
 /* ---------------- analysis: side-by-side, equal-height, centered ---------------- */
 .analysis-cols{ display:flex; flex-wrap:nowrap; align-items:center; gap:1.5rem; }
 .analysis-cols .column{ flex:1 1 0; min-width:0; }
-.analysis-cols .fig-frame{ height:300px; display:flex; align-items:center; justify-content:center; }
+.analysis-cols .fig-frame{ height:420px; display:flex; align-items:center; justify-content:center; }
 .analysis-cols .fig-frame img{ width:auto; height:100%; max-width:100%; object-fit:contain; }
 @media(max-width:768px){
   .analysis-cols{ flex-direction:column; }
