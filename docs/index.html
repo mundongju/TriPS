@@ -96,10 +96,11 @@
 <section class="section bg-soft">
   <div class="container is-max-desktop">
     <p class="section-tag has-text-centered">Qualitative Samples</p>
-    <h2 class="title is-3 has-text-centered">Drag to compare, browse with the arrows</h2>
+    <h2 class="title is-3 has-text-centered">Linear inverse problems (SD3.5-M)</h2>
     <p class="lead has-text-centered" style="max-width:820px;margin:0 auto 1.8rem;">
       Top slider compares the <b>measurement</b> against <b>our reconstruction</b>; bottom slider compares
-      <b>FlowDPS</b> against <b>ours</b>. Use the side arrows to move across five tasks and fifteen samples.
+      <b>FlowDPS</b> against <b>ours</b>. <b>Drag to compare, browse with the arrows</b> to move across five tasks
+      and fifteen samples.
     </p>
 
     <div class="quali-viewer" id="quali-viewer">
@@ -200,16 +201,17 @@
     <p class="section-tag has-text-centered">Quantitative Comparison</p>
     <h2 class="title is-3 has-text-centered">Linear inverse problems (SD3.5-M)</h2>
     <p class="lead has-text-centered" style="max-width:880px;margin:0 auto 1.6rem;">
-      Averaged over 1,000 FFHQ and 800 DIV2K samples with 28 NFEs and Gaussian noise (σ<sub>n</sub> = 0.03).
-      Bold is best, underline is second best.
+      Our experiments clearly demonstrate that TriPS-T consistently outperforms existing flow-based approaches
+      across all evaluation metrics, and that TriPS-G further advances these results, significantly improving
+      perceptual metrics while maintaining high measurement consistency.
     </p>
     <div class="table-img">
       <figure class="fig">
         <div class="fig-frame">
-          <img id="table1-img" src="static/images/Table1.png" alt="Table 1: quantitative comparison">
+          <img id="table1-img" src="static/images/Table_1.png" alt="Table 1: quantitative comparison">
         </div>
         <div class="table-fallback" id="table1-fallback" style="display:none;">
-          <p><b>Table 1 image not found.</b> Add the cropped table as <code>static/images/Table1.png</code>
+          <p><b>Table 1 image not found.</b> Add the table image as <code>static/images/Table_1.png</code>
           (see the page README), or open it in the
           <a href="static/pdfs/TriPS_arxiv.pdf" target="_blank" rel="noopener">paper PDF</a>.</p>
         </div>
