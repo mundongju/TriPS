@@ -10,6 +10,8 @@ Seoul National University, Republic of Korea<br>
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv%202605.26470-b31b1b.svg)](https://arxiv.org/abs/2605.26470)
 [![Code](https://img.shields.io/badge/GitHub-TriPS-181717.svg?logo=github)](https://github.com/mundongju/TriPS)
+[![Project Page](https://img.shields.io/badge/Project-Page-1f8a70.svg)](https://mundongju.github.io/TriPS/)
+[![HF Paper](https://img.shields.io/badge/🤗%20HuggingFace-Paper-ffcc00.svg)](https://huggingface.co/papers/2605.26470)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
