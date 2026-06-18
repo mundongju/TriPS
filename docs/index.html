@@ -16,8 +16,24 @@
 </head>
 <body>
 
+<!-- ===================== TOP NAV ===================== -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="topnav-logo" href="#top">TriPS</a>
+    <div class="topnav-links">
+      <a href="#key-idea">Key Idea</a>
+      <a href="#samples">Samples</a>
+      <a href="#analysis">Analysis</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#ablation">Ablation</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
 <!-- ===================== HERO ===================== -->
-<header class="hero2">
+<header class="hero2" id="top">
   <div class="hero2-strip" aria-hidden="true">
     <div class="htile"><img class="ht-a" src="static/hero/srx8_input.jpg" alt=""><img class="ht-b" src="static/hero/srx8_recon.jpg" alt=""></div>
     <div class="htile"><img class="ht-a" src="static/hero/srx12_input.jpg" alt=""><img class="ht-b" src="static/hero/srx12_recon.jpg" alt=""></div>
@@ -27,16 +43,16 @@
   <div class="hero2-scrim" aria-hidden="true"></div>
 
   <div class="hero2-card">
-    <h1 class="title is-2 paper-title">Triadic Dynamics Aware Diffusion Posterior Sampling for Inverse Problems:</h1>
-    <p class="title is-2 paper-subtitle">Optimizing Guidance and Stochasticity Schedules</p>
     <div class="venue-badge">ICML 2026</div>
+    <h1 class="title is-2 paper-title">Triadic Dynamics Aware Diffusion Posterior<br>Sampling for Inverse Problems:</h1>
+    <p class="title is-2 paper-subtitle">Optimizing Guidance and Stochasticity Schedules</p>
 
     <div class="author-list">
-      <a href="#">Junseo Bang</a><sup class="sup">1,*</sup> &nbsp;
-      <a href="#">Dong Ju Mun</a><sup class="sup">1,*</sup> &nbsp;
-      <a href="#">Hoigi Seo</a><sup class="sup">1</sup> &nbsp;
-      <a href="#">Seongmin Hong</a><sup class="sup">2</sup> &nbsp;
-      <a href="mailto:sychun@snu.ac.kr">Se Young Chun</a><sup class="sup">1,2,3</sup>
+      <a href="https://junseo88.github.io/" target="_blank" rel="noopener">Junseo Bang</a><sup class="sup">1,*</sup> &nbsp;
+      <a href="https://scholar.google.com/citations?user=l1kAYi8AAAAJ&hl=ko&oi=ao" target="_blank" rel="noopener">Dong Ju Mun</a><sup class="sup">1,*</sup> &nbsp;
+      <a href="http://seohoiki3215.github.io" target="_blank" rel="noopener">Hoigi Seo</a><sup class="sup">1</sup> &nbsp;
+      <a href="https://smhongok.github.io/" target="_blank" rel="noopener">Seongmin Hong</a><sup class="sup">2</sup> &nbsp;
+      <a href="https://icl.snu.ac.kr/" target="_blank" rel="noopener">Se Young Chun</a><sup class="sup">1,2,3</sup>
     </div>
     <p class="affil-list">
       <sup class="sup">1</sup>Dept. of Electrical &amp; Computer Engineering &nbsp;·&nbsp;
@@ -55,56 +71,31 @@
 </header>
 
 <!-- ===================== KEY IDEA ===================== -->
-<section class="section">
-  <div class="container is-max-desktop">
+<section class="section" id="key-idea">
+  <div class="section-card">
     <p class="section-tag has-text-centered">Key Idea</p>
-    <h2 class="title is-3 has-text-centered">Posterior sampling as an optimization problem of time-varying schedules</h2>
-    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.6rem;">
+    <h2 class="title is-3 has-text-centered">Posterior sampling as an optimization problem of<br>time-varying schedules over three coupled components</h2>
+    <p class="lead" style="text-align:left;margin:0 0 1.6rem;">
       Generative posterior sampling for inverse problems usually consists of three main components:
       <b>data consistency (DC) guidance</b>, <b>classifier-free guidance (CFG)</b>, and <b>stochasticity</b>.
-      While prior arts have focused on how to <i>develop</i> each or all components, less attention has been given to
-      <i>how to schedule</i> them, leading to heuristically fixed or partially adjusted suboptimal schedules. TriPS instead
-      reformulates posterior sampling as an <b>optimization problem of time-varying schedules</b> and jointly optimizes the
-      three schedules along a triadic trend.
+      While prior works have focused on how to <i>develop</i> each or all of these components, far less attention has been
+      paid to <i>how to schedule</i> them, leading to heuristically fixed or only partially adjusted, suboptimal schedules.
+      We reveal that these three components follow <b>triadic coupling dynamics</b>, and propose
+      <b>TriPS (Triadic Dynamics Aware Diffusion Posterior Sampling)</b>, which optimizes the time-varying schedules of
+      these three coupled forces.
     </p>
 
-    <figure class="fig" style="max-width:600px;margin:0 auto;">
-      <div class="fig-frame"><img src="static/images/Key_Idea_triadic.jpg" alt="TriPS key idea: the triadic coupling"></div>
-      <figcaption>
-        The three components form a <b>coupled triad</b>: aggressive CFG early in sampling conflicts with DC guidance and
-        slows the decay of the measurement residual, while calibrated stochasticity regularizes the off-manifold phenomenon,
-        steering trajectories back toward higher-probability regions. These findings yield a single triadic scheduling
-        trend, a <b>monotonic decrease in β(t), increase in λ(t), and decrease in η(t)</b>.
-      </figcaption>
+    <figure class="fig" style="max-width:85%;margin:0 auto;">
+      <img src="static/images/Key_Idea_components.png" alt="TriPS key idea: the three key components and the triadic coupling (DC-CFG conflict)">
     </figure>
-
-    <div class="pillars">
-      <div class="pillar">
-        <h4><span class="dot" style="background:var(--dc)"></span> DC guidance · β(t) <span class="trend" style="color:var(--dc)">&#8595;</span></h4>
-        <p>High early to strongly enforce data consistency, then reduced to avoid over-enforcing it.</p>
-      </div>
-      <div class="pillar">
-        <h4><span class="dot" style="background:var(--cfg)"></span> CFG · λ(t) <span class="trend" style="color:var(--cfg)">&#8593;</span></h4>
-        <p>Low early to suppress the guidance conflict, then increased to sharpen semantics.</p>
-      </div>
-      <div class="pillar">
-        <h4><span class="dot" style="background:var(--sto)"></span> Stochasticity · η(t) <span class="trend" style="color:var(--sto)">&#8595;</span></h4>
-        <p>High early to regularize the off-manifold phenomenon, then annealed to reduce sampling error.</p>
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- ===================== QUALITATIVE SAMPLES ===================== -->
-<section class="section bg-soft">
-  <div class="container is-max-widescreen">
+<section class="section" id="samples">
+  <div class="section-card">
     <p class="section-tag has-text-centered">Qualitative Samples</p>
     <h2 class="title is-3 has-text-centered">Linear inverse problems (SD3.5-M)</h2>
-    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.8rem;">
-      For each sample, the top slider compares the <b>measurement</b> against <b>our reconstruction</b>, and the
-      bottom slider compares <b>FlowDPS</b> against <b>ours</b>. <b>Drag to compare, and browse with the arrows.</b>
-    </p>
-
     <div class="quali-viewer" id="quali-viewer">
       <div class="quali-head">
         <span class="samp-count" id="q-count">1&#8211;3 / 15</span>
@@ -122,20 +113,20 @@
 </section>
 
 <!-- ===================== ANALYSIS ===================== -->
-<section class="section">
-  <div class="container is-max-desktop">
+<section class="section" id="analysis">
+  <div class="section-card">
     <p class="section-tag has-text-centered">Analysis</p>
     <h2 class="title is-3 has-text-centered">Triadic Coupling Dynamics</h2>
-    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.8rem;">
+    <p class="lead" style="text-align:left;margin:0 0 1.8rem;">
       We analyze the triadic coupling dynamics in posterior sampling, governed by DC guidance, CFG, and stochasticity.
-      We formalize the early-stage conflict between DC guidance and CFG, and demonstrate how stochasticity regularizes
-      sampling trajectories toward higher-probability regions.
+      We formalize the early-stage DC-CFG conflict and show how stochasticity regularizes sampling trajectories toward
+      higher-probability regions.
     </p>
 
-    <div class="columns is-variable is-6 is-vcentered analysis-cols">
+    <div class="columns is-vcentered analysis-cols">
       <div class="column">
         <figure class="fig">
-          <div class="fig-frame"><img src="static/images/Fig_Analysis_1.png" data-pdf="static/pdfs/Fig_Analysis_1.pdf" alt="Early stage guidance conflict"></div>
+          <div class="fig-frame"><img src="static/images/Analysis_1.png" alt="Early stage guidance conflict"></div>
           <figcaption><b>Early-stage guidance conflict.</b> Since DC guidance and CFG originate from distinct objectives,
           their update directions are misaligned. As the CFG scale increases, this early-stage conflict intensifies,
           slowing the decay of the measurement residual and inducing semantic hallucinations that deviate from the
@@ -144,22 +135,31 @@
       </div>
       <div class="column">
         <figure class="fig">
-          <div class="fig-frame"><img src="static/images/Fig_Analysis_2_Final.png" data-pdf="static/pdfs/Fig_Analysis_2_Final.pdf" alt="Stochasticity as a regularizer"></div>
+          <div class="fig-frame"><img src="static/images/Analysis_2.png" alt="Stochasticity as a regularizer"></div>
           <figcaption><b>Stochasticity as a regularizer.</b> Stronger DC guidance or CFG drives sampling away from
           higher-probability trajectories, lowering its alignment with the score function, whereas appropriately scaled
           stochasticity consistently improves this alignment, suppressing artifacts and restoring perceptual fidelity.</figcaption>
         </figure>
       </div>
     </div>
+
+    <div class="tst">
+      <h3 class="tst-title"><span class="tst-arrow">&#10148;</span> Triadic Scheduling Trend</h3>
+      <div class="tst-grid">
+        <div class="tst-pill tst-dc"><span class="sym">&beta;(t)</span><span class="arr">&#8595;</span><span class="nm">DC guidance</span></div>
+        <div class="tst-pill tst-cfg"><span class="sym">&lambda;(t)</span><span class="arr">&#8593;</span><span class="nm">Classifier-free guidance</span></div>
+        <div class="tst-pill tst-sto"><span class="sym">&eta;(t)</span><span class="arr">&#8595;</span><span class="nm">Stochasticity</span></div>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- ===================== METHOD ===================== -->
-<section class="section bg-soft">
-  <div class="container is-max-desktop">
+<section class="section" id="method">
+  <div class="section-card">
     <p class="section-tag has-text-centered">Method</p>
     <h2 class="title is-3 has-text-centered">Triadic Schedule Optimization</h2>
-    <p class="lead has-text-centered" style="max-width:840px;margin:0 auto 1.6rem;">
+    <p class="lead" style="text-align:left;margin:0 0 1.6rem;">
       To realize the triadic scheduling trend, TriPS comprises two complementary paradigms: a template-based schedule
       search that identifies robust schedule curves from a discrete family of functional forms, and a GRPO-based schedule
       optimization that captures complex temporal curves beyond the fixed functional templates.
@@ -175,38 +175,14 @@
         valid range, and is updated by rewards derived from the restored images.
       </figcaption>
     </figure>
-
-    <div class="columns" style="margin-top:1.5rem;">
-      <div class="column">
-        <div class="pillar" style="height:100%">
-          <h4>TriPS<sub>T</sub> · Template-based schedule search</h4>
-          <p>A coarse grid search over a discrete template family {linear, exponential, logarithmic} that satisfies the
-          triadic trend, maximizing a multi-objective utility of fidelity (PSNR) and perceptual quality (LPIPS). Provides a
-          robust baseline and a warm start for GRPO.</p>
-        </div>
-      </div>
-      <div class="column">
-        <div class="pillar" style="height:100%">
-          <h4>TriPS<sub>G</sub> · GRPO-based schedule optimization</h4>
-          <p>Each schedule is a Bernstein polynomial with coefficients sampled from Beta distributions, confining every curve
-          to a physically valid range. The policy is optimized with a clipped GRPO objective and a hybrid IQA reward
-          combining distortion and perceptual metrics.</p>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- ===================== QUANTITATIVE ===================== -->
-<section class="section">
-  <div class="container is-max-widescreen">
+<section class="section" id="results">
+  <div class="section-card">
     <p class="section-tag has-text-centered">Quantitative Comparison</p>
     <h2 class="title is-3 has-text-centered">Linear inverse problems (SD3.5-M)</h2>
-    <p class="lead has-text-centered" style="max-width:880px;margin:0 auto 1.6rem;">
-      Our experiments clearly demonstrate that TriPS-T consistently outperforms existing flow-based approaches
-      across all evaluation metrics, and that TriPS-G further advances these results, significantly improving
-      perceptual metrics while maintaining high measurement consistency.
-    </p>
     <div class="table-img">
       <figure class="fig">
         <div class="fig-frame">
@@ -225,12 +201,12 @@
 </section>
 
 <!-- ===================== REWARD-GUIDED PD CONTROL ===================== -->
-<section class="section bg-soft">
-  <div class="container is-max-desktop">
+<section class="section" id="ablation">
+  <div class="section-card">
     <p class="section-tag has-text-centered">Ablation</p>
     <h2 class="title is-3 has-text-centered">Reward-guided Perception&#8211;Distortion Control</h2>
-    <figure class="fig" style="max-width:660px;margin:0 auto;">
-      <div class="fig-frame"><img src="static/images/Fig_Ablation_PD_Control_v2.png" data-pdf="static/pdfs/Fig_Ablation_PD_Control_v2.pdf" alt="Reward guided perception distortion control"></div>
+    <figure class="fig" style="margin:0 auto;">
+      <div class="fig-frame"><img src="static/images/Ablation_PD_Control.jpg" alt="Reward guided perception distortion control"></div>
       <figcaption>By reweighting the distortion and perception terms of the hybrid reward, TriPS<sub>G</sub> navigates the
       perception-distortion trade-off. The optimized schedules align with the triadic scheduling trend while exhibiting
       fine-grained temporal variations, such as local non-monotonic fluctuations and magnitude shifts, that prove
@@ -241,7 +217,7 @@
 
 <!-- ===================== BIBTEX ===================== -->
 <section class="section" id="bibtex">
-  <div class="container is-max-desktop bibtex">
+  <div class="section-card bibtex">
     <p class="section-tag has-text-centered">Cite</p>
     <h2 class="title is-3 has-text-centered">BibTeX</h2>
     <button class="button is-dark is-small copy-btn" id="copy-bib"><span class="icon"><i class="fas fa-copy"></i></span><span>Copy</span></button>
